@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrepTracker — Exam Preparation Dashboard</title>
+  <meta name="description" content="Your personal exam preparation command center. Track mocks, analyze performance, and ace CAT, XAT, SBI PO, and more.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">🎯</div>
+        <div class="sidebar-logo-text"><span>Prep</span>Tracker</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">General</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-nav-item active" data-view="dashboard">
+          <span class="nav-icon">📊</span>
+          Dashboard
+        </a>
+        <a class="sidebar-nav-item" data-view="enter-score">
+          <span class="nav-icon">➕</span>
+          Enter Score
+        </a>
+        <a class="sidebar-nav-item" data-view="analytics">
+          <span class="nav-icon">📈</span>
+          Analytics
+        </a>
+        <a class="sidebar-nav-item" data-view="resources">
+          <span class="nav-icon">📚</span>
+          Resources
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Study</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-nav-item" data-view="timer">
+          <span class="nav-icon">⏱</span>
+          Timer
+        </a>
+        <a class="sidebar-nav-item" data-view="current-affairs">
+          <span class="nav-icon">📰</span>
+          Current Affairs
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">System</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-nav-item" data-view="settings">
+          <span class="nav-icon">⚙️</span>
+          Settings
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar">S</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Student</div>
+          <div class="sidebar-user-role">CAT 2026 Aspirant</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <div class="main-content">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="btn btn-icon btn-ghost" id="mobile-menu-btn" style="display:none">☰</button>
+        <div>
+          <div class="topbar-title" id="topbar-title">Dashboard</div>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <div class="topbar-timer" id="topbar-timer" title="Click to open timer">
+          <span class="topbar-timer-icon">⏱</span>
+          <span class="topbar-timer-display" id="timer-display">00:00:00</span>
+          <span class="topbar-timer-label" id="timer-label">Start Timer</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">🌙</button>
+        <button class="topbar-btn" title="Notifications" onclick="App.showMorningBriefing()">
+          🔔
+          <span class="badge" style="display:none"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="content-area">
+
+      <!-- ═══ DASHBOARD VIEW ═══ -->
+      <div class="view active" id="view-dashboard">
+        <div class="stat-cards" id="stat-cards"></div>
+
+        <div class="grid-70-30 mb-24">
+          <!-- Today's Plan -->
+          <div class="flex flex-col gap-16">
+            <div class="card" id="today-plan"></div>
+            <div class="card" id="revision-queue"></div>
+          </div>
+
+          <!-- Right column -->
+          <div class="flex flex-col gap-16">
+            <div class="card" id="weakness-panel"></div>
+            <div class="card" id="recent-performance"></div>
+          </div>
+        </div>
+
+        <!-- Exam Countdowns -->
+        <div class="card" id="exam-countdowns"></div>
+      </div>
+
+      <!-- ═══ ENTER SCORE VIEW ═══ -->
+      <div class="view" id="view-enter-score">
+        <div class="grid-2">
+          <!-- Entry Form -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📝 Quick Mock Entry</div>
+                <div class="card-subtitle">Enter in 30 seconds — everything else is auto-calculated</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <form id="mock-entry-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Exam *</label>
+                    <select class="form-select" id="mock-exam" required></select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Type *</label>
+                    <select class="form-select" id="mock-type" required></select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Section *</label>
+                  <select class="form-select" id="mock-section" required></select>
+                  <div class="form-hint" id="total-q-hint"></div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Score *</label>
+                    <input type="number" class="form-input" id="mock-score" placeholder="18" required min="0" step="any">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Attempted *</label>
+                    <input type="number" class="form-input" id="mock-attempted" placeholder="24" required min="0">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Correct *</label>
+                    <input type="number" class="form-input" id="mock-correct" placeholder="18" required min="0">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Time (min) *</label>
+                    <input type="number" class="form-input" id="mock-time" placeholder="35" required min="0" step="any">
+                  </div>
+                </div>
+
+                <!-- Optional Fields -->
+                <details style="margin-top: 12px">
+                  <summary style="cursor:pointer; font-size:13px; color:var(--text-secondary); font-weight:500; padding:8px 0;">
+                    ▸ Optional — Weak Topic & Mistake Type
+                  </summary>
+                  <div style="padding-top: 12px">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Main Weak Topic</label>
+                        <select class="form-select" id="mock-weak-topic"></select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Main Mistake Type</label>
+                        <select class="form-select" id="mock-mistake"></select>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:20px">
+                  💾 Save Entry
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Auto-Calculated Results -->
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">⚡ Auto-Calculated Results</div>
+              </div>
+              <div class="card-body" id="calc-results" style="display:none">
+              </div>
+              <div class="card-body" id="calc-placeholder">
+                <div class="empty-state" style="padding: 24px 0">
+                  <div style="font-size:40px;margin-bottom:12px">⚡</div>
+                  <div style="font-size:14px;color:var(--text-secondary);font-weight:500">Results appear as you type</div>
+                  <div style="font-size:12px;color:var(--text-tertiary);margin-top:4px">Enter score, attempted, correct, and time</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Entry Summary (after save) -->
+            <div id="entry-summary" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ANALYTICS VIEW ═══ -->
+      <div class="view" id="view-analytics">
+        <div class="stat-cards" id="analytics-stats"></div>
+
+        <div class="grid-60-40 mb-24">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📈 Score Trends</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="score-trend-chart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🕸 Section Strength</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container square">
+                <canvas id="section-radar-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-60-40 mb-24">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 Study Hours (This Week)</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="study-time-chart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card" id="insights-panel"></div>
+        </div>
+
+        <div class="grid-60-40 mb-24">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🎯 Weakness Priority</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="weakness-bar-chart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 Exam Readiness</div>
+            </div>
+            <div class="card-body" id="exam-readiness" style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ RESOURCES VIEW ═══ -->
+      <div class="view" id="view-resources">
+        <div class="stat-cards" id="resource-stats"></div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📚 Free Mocks & Practice Tests</div>
+            <div class="card-subtitle">Verified free resources with direct links</div>
+          </div>
+          <div class="card-body" id="resource-list">
+            <div class="empty-state">
+              <div class="empty-state-icon">📚</div>
+              <div class="empty-state-title">Loading resources...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TIMER VIEW ═══ -->
+      <div class="view" id="view-timer">
+        <div id="timer-content"></div>
+      </div>
+
+      <!-- ═══ CURRENT AFFAIRS VIEW ═══ -->
+      <div class="view" id="view-current-affairs">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📰 Current Affairs</div>
+            <div class="card-actions">
+              <span class="badge badge-info">Today</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom:16px;font-size:13px;color:var(--text-secondary)">Daily CA resources — Mark as read ✓ and star ⭐ important ones</div>
+            <div id="ca-sources">
+              <div class="ca-item">
+                <div class="task-checkbox" onclick="this.classList.toggle('checked');this.textContent=this.classList.contains('checked')?'✓':''">
+                </div>
+                <div class="ca-content">
+                  <div class="ca-title">Oliveboard Daily Current Affairs</div>
+                  <div class="ca-source"><a href="https://www.oliveboard.in/daily-gk-current-affairs/" target="_blank">oliveboard.in →</a></div>
+                </div>
+                <span class="ca-star" onclick="this.classList.toggle('starred')">☆</span>
+              </div>
+              <div class="ca-item">
+                <div class="task-checkbox" onclick="this.classList.toggle('checked');this.textContent=this.classList.contains('checked')?'✓':''">
+                </div>
+                <div class="ca-content">
+                  <div class="ca-title">GradeUp / BYJU's Exam Prep Daily CA</div>
+                  <div class="ca-source"><a href="https://byjusexamprep.com/current-affairs" target="_blank">byjusexamprep.com →</a></div>
+                </div>
+                <span class="ca-star" onclick="this.classList.toggle('starred')">☆</span>
+              </div>
+              <div class="ca-item">
+                <div class="task-checkbox" onclick="this.classList.toggle('checked');this.textContent=this.classList.contains('checked')?'✓':''">
+                </div>
+                <div class="ca-content">
+                  <div class="ca-title">Adda247 Daily Current Affairs</div>
+                  <div class="ca-source"><a href="https://www.adda247.com/upsc-exam/daily-current-affairs/" target="_blank">adda247.com →</a></div>
+                </div>
+                <span class="ca-star" onclick="this.classList.toggle('starred')">☆</span>
+              </div>
+              <div class="ca-item">
+                <div class="task-checkbox" onclick="this.classList.toggle('checked');this.textContent=this.classList.contains('checked')?'✓':''">
+                </div>
+                <div class="ca-content">
+                  <div class="ca-title">InsightsIAS Daily Current Affairs</div>
+                  <div class="ca-source"><a href="https://www.insightsonindia.com/category/current-affairs-today/" target="_blank">insightsonindia.com →</a></div>
+                </div>
+                <span class="ca-star" onclick="this.classList.toggle('starred')">☆</span>
+              </div>
+              <div class="ca-item">
+                <div class="task-checkbox" onclick="this.classList.toggle('checked');this.textContent=this.classList.contains('checked')?'✓':''">
+                </div>
+                <div class="ca-content">
+                  <div class="ca-title">The Hindu / Indian Express — Daily News Analysis</div>
+                  <div class="ca-source"><a href="https://www.thehindu.com/news/national/" target="_blank">thehindu.com →</a></div>
+                </div>
+                <span class="ca-star" onclick="this.classList.toggle('starred')">☆</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SETTINGS VIEW ═══ -->
+      <div class="view" id="view-settings">
+        <div id="settings-content"></div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main-content -->
+
+</div><!-- /app-layout -->
+
+<!-- ═══ MORNING BRIEFING MODAL ═══ -->
+<div class="modal-overlay" id="morning-modal" onclick="App.closeMorningBriefing()">
+  <div class="modal morning-modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">🌅 Daily Briefing</div>
+      <button class="modal-close" onclick="App.closeMorningBriefing()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="morning-greeting">Good Morning! 👋</div>
+      <div class="morning-date"></div>
+      <div class="morning-stats"></div>
+      <div class="morning-alert" style="display:none"></div>
+      <div class="morning-revisions" style="display:none"></div>
+      <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin:16px 0 8px;">Today's Plan</div>
+      <ul class="morning-tasks"></ul>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary btn-lg" id="morning-go-btn" style="width:100%">Let's Go! 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEST SESSION SCORE MODAL ═══ -->
+<div class="modal-overlay" id="test-session-modal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">🏁 Test Finished</div>
+        <div class="card-subtitle" id="ts-modal-subtitle" style="margin-top:4px"></div>
+      </div>
+      <button class="modal-close" onclick="TestSession.dismissModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Score *</label>
+          <input type="number" class="form-input" id="ts-score" placeholder="18" required min="0" step="any">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Attempted *</label>
+          <input type="number" class="form-input" id="ts-attempted" placeholder="24" required min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Correct *</label>
+          <input type="number" class="form-input" id="ts-correct" placeholder="18" required min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time (min) *</label>
+          <input type="number" class="form-input" id="ts-time" required min="0" step="any">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Main Weak Topic</label>
+          <select class="form-select" id="ts-weak-topic"><option value="">None</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Main Mistake Type</label>
+          <select class="form-select" id="ts-mistake"><option value="">None</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="TestSession.dismissModal()">Enter Later</button>
+      <button class="btn btn-primary" onclick="TestSession.submitScore()">💾 Save Score</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEST SESSION FLOATING TIMER ═══ -->
+<div class="test-session-bar" id="test-session-bar" style="display:none">
+  <div class="test-session-info">
+    <div class="test-session-name" id="ts-bar-name"></div>
+    <div class="test-session-time" id="ts-bar-time">00:00</div>
+  </div>
+  <div class="test-session-actions">
+    <button class="btn btn-sm btn-primary" onclick="TestSession.finishNow()">I'm Done — Enter Score</button>
+    <button class="btn btn-sm btn-ghost" onclick="TestSession.cancel()" title="Cancel timer">✕</button>
+  </div>
+</div>
+
+<!-- ═══ TOAST CONTAINER ═══ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<script src="js/data.js"></script>
+<script src="js/test-session.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/mock-entry.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/resources.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

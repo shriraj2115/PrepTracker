@@ -1,0 +1,390 @@
+/* ═══════════════════════════════════════════════════════════════
+   PREPTRACKER — Analytics Module
+   Charts, trends, insights, weakness detection
+   ═══════════════════════════════════════════════════════════════ */
+
+const Analytics = (() => {
+  let charts = {};
+
+  function init() {}
+
+  function refresh() {
+    renderOverviewStats();
+    renderScoreTrendChart();
+    renderSectionRadar();
+    renderWeaknessBar();
+    renderInsightsPanel();
+    renderStudyTimeChart();
+    renderExamReadiness();
+  }
+
+  function destroyChart(name) {
+    if (charts[name]) {
+      charts[name].destroy();
+      delete charts[name];
+    }
+  }
+
+  // ─── Overview Stat Cards ───
+  function renderOverviewStats() {
+    const container = document.getElementById('analytics-stats');
+    if (!container) return;
+
+    const data = PrepData.getData();
+    const studyStats = PrepData.getStudyStats();
+    const settings = PrepData.getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const examStats = PrepData.getExamStats(primaryExam);
+
+    container.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-card-label">📝 Total Mocks</div>
+        <div class="stat-card-value">${data.mocks.length}</div>
+        <div class="stat-card-footer"><span style="font-size:12px;color:var(--text-tertiary)">All exams combined</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">🎯 Avg Accuracy</div>
+        <div class="stat-card-value">${examStats ? examStats.avgAccuracy.toFixed(1) : '—'}%</div>
+        <div class="stat-card-footer">
+          ${examStats ? `<span class="stat-card-trend ${examStats.trend >= 0 ? 'up' : 'down'}">${examStats.trend >= 0 ? '↑' : '↓'} ${Math.abs(examStats.trend).toFixed(1)}%</span>` : ''}
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">📊 Readiness</div>
+        <div class="stat-card-value">${examStats ? examStats.examReadiness : 0}%</div>
+        <div class="stat-card-footer"><span style="font-size:12px;color:var(--text-tertiary)">${primaryExam}</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">⏱ Study Hours</div>
+        <div class="stat-card-value">${studyStats.totalHours}h</div>
+        <div class="stat-card-footer"><span style="font-size:12px;color:var(--text-tertiary)">${studyStats.totalDays} active days</span></div>
+      </div>
+    `;
+  }
+
+  // ─── Score Trend Line Chart ───
+  function renderScoreTrendChart() {
+    const canvas = document.getElementById('score-trend-chart');
+    if (!canvas) return;
+
+    destroyChart('scoreTrend');
+
+    const settings = PrepData.getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const config = PrepData.EXAM_CONFIG[primaryExam];
+    if (!config) return;
+
+    const sections = Object.keys(config.sections);
+    const datasets = sections.map((sec, i) => {
+      const mocks = PrepData.getMocks({ exam: primaryExam, section: sec });
+      const colors = ['#667eea', '#764ba2', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'];
+      return {
+        label: sec,
+        data: mocks.map(m => m.accuracy),
+        borderColor: colors[i % colors.length],
+        backgroundColor: colors[i % colors.length] + '20',
+        tension: 0.4,
+        fill: false,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      };
+    });
+
+    // Find max data points
+    const maxLen = Math.max(...datasets.map(d => d.data.length), 1);
+    const labels = Array.from({ length: maxLen }, (_, i) => `Mock ${i + 1}`);
+
+    charts.scoreTrend = new Chart(canvas, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { usePointStyle: true, padding: 16, font: { family: 'Inter', size: 12 } } },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleFont: { family: 'Inter' },
+            bodyFont: { family: 'Inter' },
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 0,
+            max: 100,
+            grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-light').trim() },
+            ticks: { callback: v => v + '%', font: { family: 'Inter', size: 11 }, color: getComputedStyle(document.documentElement).getPropertyValue('--text-tertiary').trim() }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter', size: 11 }, color: getComputedStyle(document.documentElement).getPropertyValue('--text-tertiary').trim() }
+          }
+        }
+      }
+    });
+  }
+
+  // ─── Section Radar Chart ───
+  function renderSectionRadar() {
+    const canvas = document.getElementById('section-radar-chart');
+    if (!canvas) return;
+
+    destroyChart('sectionRadar');
+
+    const settings = PrepData.getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const examStats = PrepData.getExamStats(primaryExam);
+    if (!examStats) return;
+
+    const labels = Object.keys(examStats.sectionStats);
+    const data = labels.map(l => examStats.sectionStats[l].avg);
+
+    charts.sectionRadar = new Chart(canvas, {
+      type: 'radar',
+      data: {
+        labels,
+        datasets: [{
+          label: `${primaryExam} Section Strength`,
+          data,
+          backgroundColor: 'rgba(102, 126, 234, 0.15)',
+          borderColor: '#667eea',
+          borderWidth: 2,
+          pointBackgroundColor: '#667eea',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.r.toFixed(1)}%` }
+          }
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 100,
+            ticks: { stepSize: 20, font: { family: 'Inter', size: 10 }, backdropColor: 'transparent' },
+            grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() },
+            pointLabels: { font: { family: 'Inter', size: 13, weight: '600' }, color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() }
+          }
+        }
+      }
+    });
+  }
+
+  // ─── Weakness Bar Chart ───
+  function renderWeaknessBar() {
+    const canvas = document.getElementById('weakness-bar-chart');
+    if (!canvas) return;
+
+    destroyChart('weaknessBar');
+
+    const settings = PrepData.getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const weakTopics = PrepData.getWeakTopics(primaryExam).slice(0, 8);
+
+    if (weakTopics.length === 0) return;
+
+    const labels = weakTopics.map(w => w.topic);
+    const data = weakTopics.map(w => Math.round(w.avgAccuracy));
+    const colors = data.map(v => v < 50 ? '#ef4444' : v < 70 ? '#f59e0b' : '#10b981');
+
+    charts.weaknessBar = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Accuracy %',
+          data,
+          backgroundColor: colors,
+          borderRadius: 6,
+          barThickness: 24
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => `${ctx.parsed.x}% accuracy` } }
+        },
+        scales: {
+          x: { beginAtZero: true, max: 100, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-light').trim() }, ticks: { callback: v => v + '%', font: { family: 'Inter', size: 11 } } },
+          y: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 12, weight: '500' }, color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() } }
+        }
+      }
+    });
+  }
+
+  // ─── Study Time Chart ───
+  function renderStudyTimeChart() {
+    const canvas = document.getElementById('study-time-chart');
+    if (!canvas) return;
+
+    destroyChart('studyTime');
+
+    const data = PrepData.getData();
+    const today = new Date();
+    const days = [];
+    const values = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const dayName = d.toLocaleDateString('en-IN', { weekday: 'short' });
+      days.push(dayName);
+      const log = data.dailyLogs[dateStr];
+      values.push(log ? Math.round((log.totalActual || 0) / 60 * 10) / 10 : 0);
+    }
+
+    charts.studyTime = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: days,
+        datasets: [{
+          label: 'Study Hours',
+          data: values,
+          backgroundColor: values.map((v, i) => i === 6 ? '#764ba2' : '#667eea80'),
+          borderRadius: 8,
+          barThickness: 32
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => `${ctx.parsed.y}h studied` } }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-light').trim() }, ticks: { callback: v => v + 'h', font: { family: 'Inter', size: 11 } } },
+          x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 12 } } }
+        }
+      }
+    });
+  }
+
+  // ─── Insights Panel ───
+  function renderInsightsPanel() {
+    const container = document.getElementById('insights-panel');
+    if (!container) return;
+
+    const settings = PrepData.getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const examStats = PrepData.getExamStats(primaryExam);
+    const studyStats = PrepData.getStudyStats();
+    const weakTopics = PrepData.getWeakTopics(primaryExam);
+    const revisions = PrepData.getRevisionsDue();
+
+    const insights = [];
+
+    if (examStats) {
+      // Accuracy trend
+      if (examStats.trend > 0) {
+        insights.push({ icon: '📈', text: `Your ${primaryExam} accuracy improved by ${examStats.trend.toFixed(1)}% recently`, type: 'good' });
+      } else if (examStats.trend < -5) {
+        insights.push({ icon: '📉', text: `Your ${primaryExam} accuracy dropped ${Math.abs(examStats.trend).toFixed(1)}%. Focus on weak areas.`, type: 'bad' });
+      }
+
+      // Section imbalance
+      const sectionEntries = Object.entries(examStats.sectionStats);
+      if (sectionEntries.length >= 2) {
+        const sorted = [...sectionEntries].sort((a, b) => a[1].avg - b[1].avg);
+        const gap = sorted[sorted.length - 1][1].avg - sorted[0][1].avg;
+        if (gap > 20) {
+          insights.push({ icon: '⚖️', text: `${gap.toFixed(0)}% gap between ${sorted[sorted.length - 1][0]} and ${sorted[0][0]}. Balance your prep.`, type: 'warn' });
+        }
+      }
+
+      // Score prediction
+      if (examStats.last5Avg >= 75) {
+        insights.push({ icon: '🎯', text: `At current pace, projected ${primaryExam} performance: 90+ percentile range`, type: 'good' });
+      } else if (examStats.last5Avg >= 60) {
+        insights.push({ icon: '🎯', text: `At current pace, projected ${primaryExam} performance: 75-90 percentile range`, type: 'warn' });
+      }
+    }
+
+    // Study consistency
+    if (studyStats.streak.current >= 7) {
+      insights.push({ icon: '🔥', text: `${studyStats.streak.current}-day study streak! Keep it going!`, type: 'good' });
+    }
+
+    // Revision reminders
+    if (revisions.length > 0) {
+      insights.push({ icon: '🔁', text: `${revisions.length} topics need revision today`, type: 'warn' });
+    }
+
+    // Weak topic alert
+    if (weakTopics.length > 0 && weakTopics[0].avgAccuracy < 50) {
+      insights.push({ icon: '🚨', text: `${weakTopics[0].topic} is critically weak (${Math.round(weakTopics[0].avgAccuracy)}%). Prioritize this topic.`, type: 'bad' });
+    }
+
+    if (insights.length === 0) {
+      insights.push({ icon: '📝', text: 'Take more mocks to see personalized insights', type: 'info' });
+    }
+
+    container.innerHTML = `
+      <div class="card-header">
+        <div class="card-title">💡 AI Insights</div>
+      </div>
+      <div class="card-body">
+        ${insights.map(i => `
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light);">
+            <span style="font-size:18px;flex-shrink:0">${i.icon}</span>
+            <span style="font-size:13px;color:var(--text-primary);line-height:1.5">${i.text}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // ─── Exam Readiness Gauges ───
+  function renderExamReadiness() {
+    const container = document.getElementById('exam-readiness');
+    if (!container) return;
+
+    const settings = PrepData.getSettings();
+    const exams = settings.targetExams;
+
+    container.innerHTML = exams.map(exam => {
+      const stats = PrepData.getExamStats(exam);
+      const readiness = stats ? stats.examReadiness : 0;
+      const days = PrepData.getDaysUntilExam(exam);
+      const circumference = 2 * Math.PI * 52;
+      const offset = circumference - (readiness / 100) * circumference;
+      const color = readiness >= 75 ? 'var(--success)' : readiness >= 50 ? 'var(--warning)' : 'var(--danger)';
+
+      return `
+        <div class="readiness-gauge">
+          <div class="readiness-circle">
+            <svg viewBox="0 0 120 120" width="120" height="120">
+              <circle class="gauge-bg" cx="60" cy="60" r="52"/>
+              <circle class="gauge-fill" cx="60" cy="60" r="52"
+                stroke="${color}"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${offset}"/>
+            </svg>
+            <div class="readiness-value">
+              <div class="readiness-value-number">${readiness}%</div>
+              <div class="readiness-value-label">Ready</div>
+            </div>
+          </div>
+          <div class="readiness-exam-name">${exam}</div>
+          <div class="readiness-days">${days !== null ? `${days} days left` : 'Date not set'}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  return { init, refresh };
+})();
