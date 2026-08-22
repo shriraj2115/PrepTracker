@@ -16,6 +16,8 @@ const Analytics = (() => {
     renderInsightsPanel();
     renderStudyTimeChart();
     renderExamReadiness();
+    renderMistakeTypeChart();
+    renderMistakeTypePanel();
   }
 
   function destroyChart(name) {
@@ -384,6 +386,118 @@ const Analytics = (() => {
         </div>
       `;
     }).join('');
+  }
+
+  // ─── Mistake Type Chart ───
+  // Uses the optional "main mistake type" field mocks already capture — points at
+  // *why* marks are lost (silly errors vs concept gaps vs time pressure), which is
+  // more actionable than topic-level accuracy alone.
+  function renderMistakeTypeChart() {
+    const canvas = document.getElementById('mistake-type-chart');
+    if (!canvas) return;
+
+    destroyChart('mistakeType');
+
+    const settings = PrepData.getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const stats = PrepData.getMistakeTypeStats(primaryExam);
+    if (!stats) return;
+
+    const colors = ['#ef4444', '#f59e0b', '#667eea', '#764ba2', '#3b82f6', '#10b981', '#ec4899', '#6b7280'];
+    const labels = stats.breakdown.map(b => b.type);
+    const data = stats.breakdown.map(b => b.count);
+
+    charts.mistakeType = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Occurrences',
+          data,
+          backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+          borderRadius: 6,
+          barThickness: 22
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const b = stats.breakdown[ctx.dataIndex];
+                return `${b.count} mock(s) — ${b.percentage}% of logged mistakes`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 11 } }, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border-light').trim() } },
+          y: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 12, weight: '500' }, color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() } }
+        }
+      }
+    });
+  }
+
+  // ─── Mistake Type Panel (top offender + actionable tip) ───
+  const MISTAKE_TIPS = {
+    'Silly Error': 'Slow down on the final read-through — a 10-second check before submitting catches most of these.',
+    'Concept Gap': "Go back to fundamentals for this topic — more practice won't fix a concept you don't understand yet.",
+    'Time Pressure': 'Practice with a visible timer and per-question time caps — build speed through drilling, not just more mocks.',
+    'Misread Question': 'Underline key numbers and conditions before solving — most misreads come from skimming.',
+    'Wrong Approach': "Review the standard method for this question type — you're solving it, just not the fastest way.",
+    'Guesswork': 'Flag these to revisit — guessing usually means you ran out of time or skipped a step worth practicing.',
+    'Left Unattempted': 'Check if this is a pacing issue (ran out of time) or a confidence issue (skipped on sight) — the fix is different for each.',
+    'Calculation Error': 'Practice mental math and approximation — the method was right, the arithmetic wasn\'t.'
+  };
+
+  function renderMistakeTypePanel() {
+    const container = document.getElementById('mistake-type-panel');
+    if (!container) return;
+
+    const settings = PrepData.getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const stats = PrepData.getMistakeTypeStats(primaryExam);
+
+    if (!stats) {
+      container.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">🧩 Top Mistake</div>
+        </div>
+        <div class="card-body">
+          <div class="empty-state" style="padding: 20px 0">
+            <div style="font-size: 32px; margin-bottom: 8px">🧩</div>
+            <div style="font-size: 13px; color: var(--text-tertiary)">Log a "Main Mistake Type" when entering a score to see this</div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const top = stats.topMistake;
+    const tip = MISTAKE_TIPS[top.type] || '';
+
+    container.innerHTML = `
+      <div class="card-header">
+        <div class="card-title">🧩 Top Mistake</div>
+      </div>
+      <div class="card-body">
+        <div style="text-align:center; padding: 8px 0 16px;">
+          <div style="font-size: 24px; font-weight: 800; color: var(--danger)">${top.type}</div>
+          <div style="font-size: 13px; color: var(--text-tertiary); margin-top: 4px">${top.percentage}% of logged mistakes (${top.count}/${stats.totalLogged})</div>
+        </div>
+        <div style="padding: 12px; background: var(--bg-tertiary); border-radius: 8px;">
+          <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 4px">💡 What to do about it</div>
+          <div style="font-size: 13px; color: var(--text-primary); font-weight: 500; line-height: 1.5">${tip}</div>
+        </div>
+        <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 12px; text-align: center;">
+          Logged on ${stats.totalLogged} of ${stats.totalMocks} mocks
+        </div>
+      </div>
+    `;
   }
 
   return { init, refresh };

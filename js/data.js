@@ -876,6 +876,31 @@ const PrepData = (() => {
     };
   }
 
+  // Aggregates the optional "main mistake type" field across mocks — points at
+  // *why* marks are being lost (silly errors vs concept gaps vs time pressure),
+  // not just which topic, using data already captured at entry time.
+  function getMistakeTypeStats(exam) {
+    const allMocks = getMocks({ exam });
+    const logged = allMocks.filter(m => m.mistakeType);
+    if (logged.length === 0) return null;
+
+    const counts = {};
+    logged.forEach(m => {
+      counts[m.mistakeType] = (counts[m.mistakeType] || 0) + 1;
+    });
+
+    const breakdown = Object.entries(counts)
+      .map(([type, count]) => ({ type, count, percentage: Math.round((count / logged.length) * 1000) / 10 }))
+      .sort((a, b) => b.count - a.count);
+
+    return {
+      totalLogged: logged.length,
+      totalMocks: allMocks.length,
+      breakdown,
+      topMistake: breakdown[0]
+    };
+  }
+
   function getStudyStats() {
     const data = getData();
     let totalMinutes = 0;
@@ -1024,6 +1049,7 @@ const PrepData = (() => {
     addMock,
     getMocks,
     getExamStats,
+    getMistakeTypeStats,
     getStudyStats,
 
     getDailyLog,

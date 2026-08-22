@@ -74,7 +74,7 @@ Everything — mocks, scores, streaks, settings — is stored **locally on your 
 
 - **Dashboard** — today's study plan, exam countdowns, weak-area alerts, revision queue, streak.
 - **Enter Score** — 4-field mock/sectional entry (score, attempted, correct, time); everything else (accuracy, attempt rate, error rate, trend, readiness, recommendation) is calculated automatically.
-- **Analytics** — score trends, section-strength radar, weakness ranking, study-hours chart, readiness gauges.
+- **Analytics** — score trends, section-strength radar, weakness ranking, study-hours chart, readiness gauges, and a mistake-type breakdown (Silly Error vs Concept Gap vs Time Pressure, etc.) with an actionable tip for whichever one is costing you the most marks.
 - **Resources** — a curated list of real, checked free mock/practice links per exam. Each entry shows whether it's fully free or free-with-login, and when it was last checked.
 - **Timer** — stopwatch and Pomodoro; time studied here counts toward your daily stats automatically.
 - **Click "START TEST"** anywhere and the app starts a timer for that test's real duration in the background; when it ends (or you click "I'm Done"), it automatically asks for your score — you never have to remember to log it.
