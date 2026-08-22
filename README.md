@@ -57,12 +57,16 @@ Both scripts need Node.js too (for `npx http-server`). If you don't have Node at
 
 **Important for Option B only:** always open the app the same way (same shortcut, same URL) — the browser ties your data to the exact URL/method you used, so opening it a different way looks like a separate, empty app. This is exactly what Option A (the desktop app) avoids.
 
+### Option C — Shared hosted link (GitHub Pages)
+
+The app can also be hosted as a live link (e.g. `https://shriraj2115.github.io/PrepTracker/`) so multiple people can use it without installing anything. **This is not a multi-user account system** — there's no login and no shared database. Each person's browser stores its own separate copy of the data at that URL; two people opening the same link on their own devices **cannot see each other's data**, but also can't sync or share progress between them. It behaves exactly like Option B above, just without you needing to run anything locally — same rule applies: always open the same link, and your data will always be there when you come back, even after closing everything.
+
 ## Where your data lives
 
 Everything — mocks, scores, streaks, settings — is stored **locally on your PC, never uploaded anywhere**.
 
 - **Desktop app (Option A):** stored in Electron's app-data folder for PrepTracker (e.g. `%APPDATA%\PrepTracker` on Windows). Tied to one fixed app, not a browser or URL — this is the persistence guarantee: as long as you keep using the same installed app, your data is there every time you open it, indefinitely, until you uninstall or explicitly clear it.
-- **Browser (Option B):** stored in that browser's `localStorage` for the exact URL you used.
+- **Browser (Option B) or hosted link (Option C):** stored in that browser's `localStorage` for the exact URL you used. Nobody else — not even someone else using the very same hosted link — can see it, because it never leaves your browser.
 
 **Back up regularly regardless of which option you use:** Settings → Export JSON Backup downloads a file you can restore later via Settings → Import JSON Backup. Do this before uninstalling, clearing browser data, or moving to a new PC.
 

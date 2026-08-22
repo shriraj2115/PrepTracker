@@ -340,6 +340,27 @@ input, select, textarea {
   border-top: 1px solid var(--border-light);
 }
 
+.sidebar-github-star {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.sidebar-github-star:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--accent-primary-light);
+}
+
 .sidebar-user {
   display: flex;
   align-items: center;
