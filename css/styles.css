@@ -340,22 +340,29 @@ input, select, textarea {
   border-top: 1px solid var(--border-light);
 }
 
-.sidebar-github-star {
+.sidebar-footer-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sidebar-footer-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px;
-  margin-bottom: 10px;
+  gap: 4px;
+  padding: 8px 6px;
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--border-color);
   font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
-.sidebar-github-star:hover {
+.sidebar-footer-btn:hover {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
   background: var(--accent-primary-light);
@@ -1360,6 +1367,54 @@ input, select, textarea {
 .cal-legend .cal-dot {
   width: 8px;
   height: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACHIEVEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.badge-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 14px 10px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.badge-tile.earned {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary-light);
+}
+
+.badge-tile.locked {
+  opacity: 0.55;
+}
+
+.badge-tile-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.badge-tile-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.badge-tile-desc {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.3;
 }
 
 /* ═══════════════════════════════════════════════════════════════

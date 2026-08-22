@@ -242,6 +242,7 @@ const MockEntry = (() => {
       const entry = PrepData.addMock({
         exam, testType, section, score, attempted, correct, time, weakTopic, mistakeType
       });
+      Achievements.refreshCount();
 
       // Show success with key stats
       App.showToast(

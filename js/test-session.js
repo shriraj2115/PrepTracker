@@ -189,6 +189,7 @@ const TestSession = (() => {
     if (meta.resourceId) {
       PrepData.markResourceAttempted(meta.resourceId, score, entry.accuracy);
     }
+    Achievements.refreshCount();
     if (meta.taskId) {
       PrepData.updateTaskStatus(meta.taskId, 'done', Math.round(time));
     }

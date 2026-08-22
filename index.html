@@ -69,9 +69,14 @@
     </div>
 
     <div class="sidebar-footer">
-      <a class="sidebar-github-star" href="https://github.com/shriraj2115/PrepTracker" target="_blank" title="Star this project on GitHub">
-        ⭐ Like it? Star on GitHub
-      </a>
+      <div class="sidebar-footer-row">
+        <button class="sidebar-footer-btn" id="sidebar-achievements-btn" title="View achievements">
+          🏆 <span id="achievements-count">0/9</span>
+        </button>
+        <a class="sidebar-footer-btn" href="https://github.com/shriraj2115/PrepTracker" target="_blank" title="Star this project on GitHub">
+          ⭐ Star
+        </a>
+      </div>
       <div class="sidebar-user">
         <div class="sidebar-user-avatar">S</div>
         <div class="sidebar-user-info">
@@ -481,6 +486,19 @@
   </div>
 </div>
 
+<!-- ═══ ACHIEVEMENTS MODAL ═══ -->
+<div class="modal-overlay" id="achievements-modal" onclick="Achievements.close()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">🏆 Achievements</div>
+      <button class="modal-close" onclick="Achievements.close()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="badge-grid" id="badge-grid"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ TEST SESSION FLOATING TIMER ═══ -->
 <div class="test-session-bar" id="test-session-bar" style="display:none">
   <div class="test-session-info">
@@ -500,6 +518,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 <script src="js/data.js"></script>
 <script src="js/pdf-reader.js"></script>
+<script src="js/achievements.js"></script>
 <script src="js/test-session.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/mock-entry.js"></script>

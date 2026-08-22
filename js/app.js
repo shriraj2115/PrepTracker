@@ -26,6 +26,7 @@ const App = (() => {
     Resources.init();
     Settings.init();
     StudyTimer.init();
+    Achievements.init();
 
     // Bind morning briefing "Let's Go" button
     const goBtn = document.getElementById('morning-go-btn');
@@ -93,6 +94,7 @@ const App = (() => {
     if (view === 'dashboard') Dashboard.refresh();
     if (view === 'analytics') Analytics.refresh();
     if (view === 'resources') Resources.refresh();
+    Achievements.refreshCount();
 
     // Close mobile sidebar
     document.querySelector('.sidebar')?.classList.remove('open');

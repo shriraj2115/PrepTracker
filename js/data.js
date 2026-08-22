@@ -719,6 +719,7 @@ const PrepData = (() => {
     log.totalActual = (log.totalActual || 0) + minutes;
     data.dailyLogs[today] = log;
     updateStreak(data);
+    checkAchievements(data);
     saveData(data);
   }
 
@@ -738,6 +739,7 @@ const PrepData = (() => {
     }
 
     updateStreak(data);
+    checkAchievements(data);
     saveData(data);
     return log;
   }
@@ -798,19 +800,19 @@ const PrepData = (() => {
   }
 
   // ─── Achievements ───
-  function checkAchievements(data) {
-    const ACHIEVEMENTS = [
-      { id: 'first_mock', name: 'First Mock', desc: 'Completed your first mock test', icon: '🎯', check: d => d.mocks.length >= 1 },
-      { id: 'streak_7', name: '7-Day Streak', desc: 'Studied 7 days in a row', icon: '🔥', check: d => d.streakData.current >= 7 },
-      { id: 'streak_14', name: '14-Day Streak', desc: 'Studied 14 days in a row', icon: '💪', check: d => d.streakData.current >= 14 },
-      { id: 'streak_30', name: '30-Day Streak', desc: '30 days of consistent study', icon: '🏆', check: d => d.streakData.current >= 30 },
-      { id: 'accuracy_80', name: '80% Club', desc: 'Scored 80%+ accuracy in a mock', icon: '⭐', check: d => d.mocks.some(m => m.accuracy >= 80) },
-      { id: 'accuracy_90', name: '90% Elite', desc: 'Scored 90%+ accuracy in a mock', icon: '💎', check: d => d.mocks.some(m => m.accuracy >= 90) },
-      { id: 'ten_mocks', name: 'Dedicated', desc: 'Completed 10 mocks', icon: '📊', check: d => d.mocks.length >= 10 },
-      { id: 'twenty_five_mocks', name: 'Mock Master', desc: 'Completed 25 mocks', icon: '🎓', check: d => d.mocks.length >= 25 },
-      { id: 'fifty_mocks', name: 'Test Warrior', desc: 'Completed 50 mocks', icon: '⚔️', check: d => d.mocks.length >= 50 }
-    ];
+  const ACHIEVEMENTS = [
+    { id: 'first_mock', name: 'First Mock', desc: 'Completed your first mock test', icon: '🎯', check: d => d.mocks.length >= 1 },
+    { id: 'streak_7', name: '7-Day Streak', desc: 'Studied 7 days in a row', icon: '🔥', check: d => d.streakData.current >= 7 },
+    { id: 'streak_14', name: '14-Day Streak', desc: 'Studied 14 days in a row', icon: '💪', check: d => d.streakData.current >= 14 },
+    { id: 'streak_30', name: '30-Day Streak', desc: '30 days of consistent study', icon: '🏆', check: d => d.streakData.current >= 30 },
+    { id: 'accuracy_80', name: '80% Club', desc: 'Scored 80%+ accuracy in a mock', icon: '⭐', check: d => d.mocks.some(m => m.accuracy >= 80) },
+    { id: 'accuracy_90', name: '90% Elite', desc: 'Scored 90%+ accuracy in a mock', icon: '💎', check: d => d.mocks.some(m => m.accuracy >= 90) },
+    { id: 'ten_mocks', name: 'Dedicated', desc: 'Completed 10 mocks', icon: '📊', check: d => d.mocks.length >= 10 },
+    { id: 'twenty_five_mocks', name: 'Mock Master', desc: 'Completed 25 mocks', icon: '🎓', check: d => d.mocks.length >= 25 },
+    { id: 'fifty_mocks', name: 'Test Warrior', desc: 'Completed 50 mocks', icon: '⚔️', check: d => d.mocks.length >= 50 }
+  ];
 
+  function checkAchievements(data) {
     ACHIEVEMENTS.forEach(a => {
       if (!data.achievements.includes(a.id) && a.check(data)) {
         data.achievements.push(a.id);
@@ -1044,6 +1046,7 @@ const PrepData = (() => {
 
     addErrorLogEntry,
     checkAchievements,
+    ACHIEVEMENTS,
 
     exportJSON,
     importJSON,
