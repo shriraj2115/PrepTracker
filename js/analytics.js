@@ -338,9 +338,11 @@ const Analytics = (() => {
 
     container.innerHTML = `
       <div class="card-header">
-        <div class="card-title">💡 AI Insights</div>
+        <div class="card-title">💡 Insights</div>
+        <button class="btn btn-ghost btn-sm" id="ai-insight-btn" title="Uses your OpenRouter balance">✨ Get AI Insight</button>
       </div>
       <div class="card-body">
+        <div id="ai-insight-box" style="display:none; margin-bottom: 12px;"></div>
         ${insights.map(i => `
           <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light);">
             <span style="font-size:18px;flex-shrink:0">${i.icon}</span>
@@ -349,6 +351,11 @@ const Analytics = (() => {
         `).join('')}
       </div>
     `;
+
+    const aiBtn = document.getElementById('ai-insight-btn');
+    if (aiBtn) {
+      aiBtn.addEventListener('click', () => AIAssistant.generateInsight(aiBtn));
+    }
   }
 
   // ─── Exam Readiness Gauges ───
@@ -540,7 +547,7 @@ const Analytics = (() => {
       <div class="card-body-compact">
         <ul class="task-list">
           ${shown.map(e => `
-            <li class="task-item ${e.resolved ? 'completed' : ''}" data-error-id="${e.id}">
+            <li class="task-item ${e.resolved ? 'completed' : ''}" data-error-id="${e.id}" style="align-items:flex-start; flex-wrap:wrap;">
               <div class="task-checkbox ${e.resolved ? 'checked' : ''}" data-error-check="${e.id}" title="Mark reviewed">${e.resolved ? '✓' : ''}</div>
               <div class="task-info">
                 <div class="task-name">${e.note}</div>
@@ -548,7 +555,9 @@ const Analytics = (() => {
                   <span class="task-category dilr">${e.topic || e.section}</span>
                   <span>${new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
                 </div>
+                <div class="ai-response" id="ai-response-${e.id}" style="display:none"></div>
               </div>
+              <button class="btn btn-ghost btn-sm" data-ai-explain="${e.id}" title="Uses your OpenRouter balance">🤖 Explain</button>
             </li>
           `).join('')}
         </ul>
@@ -562,6 +571,11 @@ const Analytics = (() => {
           PrepData.resolveErrorLogEntry(e.id);
           renderErrorLog();
         });
+      }
+
+      const explainBtn = document.querySelector(`[data-ai-explain="${e.id}"]`);
+      if (explainBtn) {
+        explainBtn.addEventListener('click', () => AIAssistant.explainMistake(e.id, explainBtn));
       }
     });
   }

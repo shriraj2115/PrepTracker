@@ -102,6 +102,29 @@ const Settings = (() => {
         </div>
       </div>
 
+      <!-- AI Assistant -->
+      <div class="settings-section">
+        <div class="settings-section-title">🤖 AI Assistant (optional)</div>
+        <div class="card">
+          <div class="card-body">
+            <div class="form-hint" style="margin-bottom:12px">
+              Uses your own <a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a> API key — each request draws from your OpenRouter balance, this is not free. The key is stored only in this browser's local storage, never sent anywhere except OpenRouter.
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">OpenRouter API Key</label>
+                <input type="password" class="form-input" id="setting-openrouter-key" value="${settings.openRouterApiKey || ''}" placeholder="sk-or-v1-...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model</label>
+                <input type="text" class="form-input" id="setting-openrouter-model" value="${settings.openRouterModel || 'openai/gpt-4o-mini'}" placeholder="openai/gpt-4o-mini">
+                <div class="form-hint">Any model id from <a href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Data Management -->
       <div class="settings-section">
         <div class="settings-section-title">💾 Data Management</div>
@@ -135,6 +158,8 @@ const Settings = (() => {
     settings.dailyStudyHours = parseFloat(document.getElementById('setting-study-hours')?.value) || 4;
     settings.pomodoroMinutes = parseInt(document.getElementById('setting-pomodoro')?.value) || 25;
     settings.breakMinutes = parseInt(document.getElementById('setting-break')?.value) || 5;
+    settings.openRouterApiKey = document.getElementById('setting-openrouter-key')?.value.trim() || null;
+    settings.openRouterModel = document.getElementById('setting-openrouter-model')?.value.trim() || 'openai/gpt-4o-mini';
 
     // Save exam dates
     Object.keys(PrepData.EXAM_CONFIG).forEach(key => {

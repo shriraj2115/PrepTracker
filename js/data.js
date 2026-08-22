@@ -237,6 +237,8 @@ const PrepData = (() => {
     userName: 'Student',
     morningBriefingShown: null, // date string of last shown
     weeklyReportDay: 0, // Sunday
+    openRouterApiKey: null, // optional — enables the AI Assistant features, stored locally only
+    openRouterModel: 'openai/gpt-4o-mini'
   };
 
   // ─── Default Roadmap Template ───
