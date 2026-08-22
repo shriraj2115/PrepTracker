@@ -14,3 +14,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Dependencies & build output (Electron desktop app)
+node_modules/
+dist/
+out/

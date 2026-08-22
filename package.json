@@ -1,0 +1,40 @@
+{
+  "name": "preptracker",
+  "version": "1.0.0",
+  "description": "A minimal, local exam-prep dashboard for CAT, XAT, MAH CET, NMAT, SBI PO, IBPS PO, RBI Grade B, SEBI Grade A, SSC CGL and RRB NTPC.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^32.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.preptracker.app",
+    "productName": "PrepTracker",
+    "files": [
+      "main.js",
+      "index.html",
+      "manifest.json",
+      "css/**",
+      "js/**",
+      "data/**"
+    ],
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "mac": {
+      "target": ["dmg"]
+    },
+    "linux": {
+      "target": ["AppImage"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

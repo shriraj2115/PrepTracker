@@ -266,37 +266,35 @@ const App = (() => {
     // Today's tasks preview
     const tasksEl = modal.querySelector('.morning-tasks');
     if (tasksEl) {
-      const todayLog = PrepData.getTodayLog();
-      if (todayLog) {
-        tasksEl.innerHTML = todayLog.tasks.map(t => `
-          <li class="morning-task">
-            <span class="morning-task-icon">${getTaskIcon(t.type)}</span>
-            <span>${t.name}</span>
-            <span class="morning-task-time">${t.duration}m</span>
-          </li>
-        `).join('');
-      } else {
-        // Create default tasks
-        const defaultLog = PrepData.createDailyLog(PrepData.DEFAULT_ROADMAP_TEMPLATE);
-        PrepData.saveTodayLog(defaultLog);
-        tasksEl.innerHTML = defaultLog.tasks.map(t => `
-          <li class="morning-task">
-            <span class="morning-task-icon">${getTaskIcon(t.type)}</span>
-            <span>${t.name}</span>
-            <span class="morning-task-time">${t.duration}m</span>
-          </li>
-        `).join('');
-      }
+      const todayLog = PrepData.getOrCreateTodayLog();
+      tasksEl.innerHTML = todayLog.tasks.map(t => `
+        <li class="morning-task">
+          <span class="morning-task-icon">${getTaskIcon(t.type)}</span>
+          <span>${t.name}</span>
+          <span class="morning-task-time">${t.duration}m</span>
+        </li>
+      `).join('');
     }
 
-    // Revisions due
+    // Revisions due + anything left unfinished from yesterday
     const revisions = PrepData.getRevisionsDue();
+    const pendingYesterday = PrepData.getPendingFromYesterday();
     const revContainer = modal.querySelector('.morning-revisions');
-    if (revContainer && revisions.length > 0) {
-      revContainer.innerHTML = `<div class="morning-alert" style="border-left-color: var(--info);">
-        <span class="morning-alert-icon">🔁</span>
-        <span class="morning-alert-text">${revisions.length} revision(s) due today</span>
-      </div>`;
+    if (revContainer && (revisions.length > 0 || pendingYesterday)) {
+      let html = '';
+      if (pendingYesterday) {
+        html += `<div class="morning-alert" style="border-left-color: var(--danger); margin-bottom: 8px;">
+          <span class="morning-alert-icon">⚠️</span>
+          <span class="morning-alert-text">${pendingYesterday.tasks.length} task(s) left unfinished from yesterday: ${pendingYesterday.tasks.map(t => t.name).join(', ')}</span>
+        </div>`;
+      }
+      if (revisions.length > 0) {
+        html += `<div class="morning-alert" style="border-left-color: var(--info);">
+          <span class="morning-alert-icon">🔁</span>
+          <span class="morning-alert-text">${revisions.length} revision(s) due today</span>
+        </div>`;
+      }
+      revContainer.innerHTML = html;
       revContainer.style.display = 'block';
     } else if (revContainer) {
       revContainer.style.display = 'none';

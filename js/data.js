@@ -491,6 +491,7 @@ const PrepData = (() => {
         id: `task_${Date.now()}_${i}`,
         name: t.name,
         section: t.section,
+        topic: t.topic || null,
         type: t.type,
         duration: t.duration,
         category: t.category,
@@ -505,6 +506,72 @@ const PrepData = (() => {
     };
   }
 
+  // ─── Syllabus Curriculum ───
+  // Rotates through the full CAT syllabus (one QA + one VARC + one DILR topic per day)
+  // so each day covers a different, specific topic instead of a generic section name.
+  // Cycle lengths differ per section (15/6/7 topics), so the 3-topic combination keeps
+  // varying for months before repeating exactly — full coverage, then natural revision.
+  const CURRICULUM_START_DATE = '2026-08-23';
+
+  function getCurriculumDayIndex(dateStr) {
+    const start = new Date(CURRICULUM_START_DATE + 'T00:00:00');
+    const d = new Date(dateStr + 'T00:00:00');
+    const diff = Math.round((d - start) / (1000 * 60 * 60 * 24));
+    return Math.max(0, diff);
+  }
+
+  function buildCatDailyTasks(dateStr) {
+    const topics = EXAM_CONFIG.CAT.topics;
+    const dayIdx = getCurriculumDayIndex(dateStr);
+    const qaTopic = topics.QA[dayIdx % topics.QA.length];
+    const varcTopic = topics.VARC[dayIdx % topics.VARC.length];
+    const dilrTopic = topics.DILR[dayIdx % topics.DILR.length];
+
+    return [
+      { name: `Quant — ${qaTopic}`, section: 'QA', topic: qaTopic, type: 'learn', duration: 50, category: 'quant' },
+      { name: `VARC — ${varcTopic}`, section: 'VARC', topic: varcTopic, type: 'practice', duration: 40, category: 'varc' },
+      { name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr' },
+      { name: 'Current Affairs', section: 'GK', type: 'read', duration: 20, category: 'gk' },
+      { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'banking' },
+      { name: 'Revision', section: null, type: 'review', duration: 20, category: 'review' }
+    ];
+  }
+
+  // Builds today's task list: a real rotating syllabus for CAT, the generic template
+  // for exams that don't have a curriculum defined yet.
+  function buildDailyTasks(examKey, dateStr) {
+    if (examKey === 'CAT') return buildCatDailyTasks(dateStr);
+    return DEFAULT_ROADMAP_TEMPLATE;
+  }
+
+  // Single source of truth for "today's tasks" — creates them from the curriculum
+  // exactly once per day if they don't exist yet, otherwise returns the existing log.
+  function getOrCreateTodayLog() {
+    let log = getTodayLog();
+    if (log) return log;
+
+    const today = new Date().toISOString().split('T')[0];
+    const settings = getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const tasks = buildDailyTasks(primaryExam, today);
+    log = createDailyLog(tasks);
+    saveTodayLog(log);
+    return log;
+  }
+
+  // Tasks left un-done (not done, not skipped) from yesterday — surfaced as an alert
+  // so missed work doesn't just silently disappear when a new day's plan appears.
+  function getPendingFromYesterday() {
+    const y = new Date();
+    y.setDate(y.getDate() - 1);
+    const yStr = y.toISOString().split('T')[0];
+    const log = getDailyLog(yStr);
+    if (!log) return null;
+    const pending = log.tasks.filter(t => t.status === 'pending');
+    if (pending.length === 0) return null;
+    return { date: yStr, tasks: pending };
+  }
+
   // Credits free-form Timer (stopwatch/Pomodoro) study time to today's log,
   // so it counts toward streaks and the study-hours chart just like task time does.
   function addStudyMinutes(minutes) {
@@ -513,7 +580,8 @@ const PrepData = (() => {
     const data = getData();
     let log = data.dailyLogs[today];
     if (!log) {
-      log = createDailyLog(DEFAULT_ROADMAP_TEMPLATE);
+      const settings = getSettings();
+      log = createDailyLog(buildDailyTasks(settings.targetExams[0] || 'CAT', today));
     }
     log.totalActual = (log.totalActual || 0) + minutes;
     data.dailyLogs[today] = log;
@@ -830,6 +898,9 @@ const PrepData = (() => {
     createDailyLog,
     updateTaskStatus,
     addStudyMinutes,
+    buildDailyTasks,
+    getOrCreateTodayLog,
+    getPendingFromYesterday,
 
     getWeakTopics,
     getRevisionsDue,

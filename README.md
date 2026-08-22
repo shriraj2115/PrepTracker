@@ -4,6 +4,27 @@ A minimal, local exam-prep dashboard for CAT, XAT, MAH CET, NMAT, SBI PO, IBPS P
 
 ## How to run it
 
+### Option A — Desktop app (recommended)
+
+This runs PrepTracker as a real desktop application (Electron) with its own icon, its own window, and — most importantly — **one single, fixed place your data is stored**, so there's no "did I open it the same way as last time" ambiguity at all.
+
+Requires [Node.js](https://nodejs.org) once, to build/run it:
+
+```
+npm install
+npm start
+```
+
+That opens the PrepTracker window directly. Closing the window minimizes it to the system tray (bottom-right, near the clock) instead of quitting — right-click the tray icon to reopen it or fully quit. This means reminders and notifications keep working even if you've closed the window.
+
+To build a standalone installer/exe you can double-click without `npm start` every time:
+```
+npm run dist
+```
+The finished installer lands in the `dist/` folder (an `.exe` on Windows, `.dmg` on Mac, `.AppImage` on Linux).
+
+### Option B — Browser (no build step)
+
 **Windows** — double-click `start.bat`. It opens `http://localhost:5588` in your browser and keeps a local server running in the window it opens. Keep that window open while you study; closing it stops the server (your saved data is not affected).
 
 **Mac/Linux** — open a terminal in this folder and run:
@@ -11,17 +32,18 @@ A minimal, local exam-prep dashboard for CAT, XAT, MAH CET, NMAT, SBI PO, IBPS P
 sh start.sh
 ```
 
-Both scripts need [Node.js](https://nodejs.org) installed (for `npx http-server`). If you don't have Node and don't want to install it, you can instead just double-click `index.html` to open it directly in your browser — everything works except the free-resource list will use its smaller built-in fallback instead of `data/resources.json`.
+Both scripts need Node.js too (for `npx http-server`). If you don't have Node at all, you can just double-click `index.html` to open it directly in your browser — everything works except the free-resource list falls back to its smaller built-in copy instead of `data/resources.json`.
 
-**Important:** always open the app the same way (same shortcut, same URL). Your data is saved in the browser tied to that exact URL — opening it a different way (e.g. sometimes via the server, sometimes by double-clicking the file) looks like separate apps with separate data.
+**Important for Option B only:** always open the app the same way (same shortcut, same URL) — the browser ties your data to the exact URL/method you used, so opening it a different way looks like a separate, empty app. This is exactly what Option A (the desktop app) avoids.
 
 ## Where your data lives
 
-Everything — mocks, scores, streaks, settings — is stored locally in your browser's storage (`localStorage`). Nothing is uploaded anywhere. This also means:
-- Data is per-browser. If you switch browsers or computers, it won't follow you automatically.
-- Clearing your browser's site data for this app will erase it.
+Everything — mocks, scores, streaks, settings — is stored **locally on your PC, never uploaded anywhere**.
 
-**Back up regularly:** Settings → Export JSON Backup downloads a file you can restore later via Settings → Import JSON Backup. Do this before clearing browser data or moving to a new PC.
+- **Desktop app (Option A):** stored in Electron's app-data folder for PrepTracker (e.g. `%APPDATA%\PrepTracker` on Windows). Tied to one fixed app, not a browser or URL — this is the persistence guarantee: as long as you keep using the same installed app, your data is there every time you open it, indefinitely, until you uninstall or explicitly clear it.
+- **Browser (Option B):** stored in that browser's `localStorage` for the exact URL you used.
+
+**Back up regularly regardless of which option you use:** Settings → Export JSON Backup downloads a file you can restore later via Settings → Import JSON Backup. Do this before uninstalling, clearing browser data, or moving to a new PC.
 
 ## What's in the box
 

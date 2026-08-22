@@ -1258,6 +1258,87 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   STUDY CALENDAR
+   ═══════════════════════════════════════════════════════════════ */
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.cal-weekdays div {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: var(--border-radius-xs);
+  background: var(--bg-tertiary);
+}
+
+.cal-cell.empty {
+  background: transparent;
+}
+
+.cal-cell.today {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+.cal-daynum {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.cal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.cal-dot.full { background: var(--success); }
+.cal-dot.partial { background: var(--warning); }
+.cal-dot.missed { background: var(--danger); opacity: 0.6; }
+
+.cal-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.cal-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cal-legend .cal-dot {
+  width: 8px;
+  height: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    TEST SESSION FLOATING TIMER
    ═══════════════════════════════════════════════════════════════ */
 

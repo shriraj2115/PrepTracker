@@ -31,31 +31,54 @@ const Resources = (() => {
     }
   }
 
+  // Section → curated topic-wise study material hub, for learn/practice tasks
+  const STUDY_HUB_BY_SECTION = {
+    QA: 'cat-cracku-quant-study',
+    VARC: 'cat-cracku-varc-study',
+    DILR: 'cat-cracku-dilr-study'
+  };
+
   // ─── Automatic Mock Selection (Daily Roadmap Integration) ───
   function attachResourceToTodayTask() {
-    const todayLog = PrepData.getTodayLog();
-    if (!todayLog) return;
+    const todayLog = PrepData.getOrCreateTodayLog();
+    let changed = false;
 
     const testTask = todayLog.tasks.find(t => t.type === 'test' && !t.resourceLink);
-    if (!testTask) return;
+    if (testTask) {
+      const settings = PrepData.getSettings();
+      const primaryExam = settings.targetExams[0] || 'CAT';
+      const weakTopics = PrepData.getWeakTopics(primaryExam);
+      const weakestSection = weakTopics.length > 0 ? weakTopics[0].section : null;
 
-    const settings = PrepData.getSettings();
-    const primaryExam = settings.targetExams[0] || 'CAT';
-    const weakTopics = PrepData.getWeakTopics(primaryExam);
-    const weakestSection = weakTopics.length > 0 ? weakTopics[0].section : null;
+      const rec = getRecommendedResource(primaryExam, weakestSection);
+      if (rec) {
+        testTask.resourceLink = rec.url;
+        testTask.resourceName = rec.name;
+        testTask.resourceId = rec.id;
+        testTask.exam = rec.exam;
+        testTask.section = rec.section;
+        testTask.testType = rec.type;
+        testTask.resourceDuration = getResourceDuration(rec);
+        changed = true;
+      }
+    }
 
-    const rec = getRecommendedResource(primaryExam, weakestSection);
-    if (!rec) return;
+    // Learn/practice tasks (the day's specific syllabus topic) get a direct link to
+    // that section's verified topic-wise study material — same hub each time, but the
+    // task name always tells you exactly which topic within it to focus on today.
+    todayLog.tasks.forEach(t => {
+      if ((t.type === 'learn' || t.type === 'practice') && !t.resourceLink) {
+        const hubId = STUDY_HUB_BY_SECTION[t.section];
+        const hub = hubId && allResources.find(r => r.id === hubId);
+        if (hub) {
+          t.resourceLink = hub.url;
+          t.resourceName = hub.name;
+          changed = true;
+        }
+      }
+    });
 
-    testTask.resourceLink = rec.url;
-    testTask.resourceName = rec.name;
-    testTask.resourceId = rec.id;
-    testTask.exam = rec.exam;
-    testTask.section = rec.section;
-    testTask.testType = rec.type;
-    testTask.resourceDuration = getResourceDuration(rec);
-
-    PrepData.saveTodayLog(todayLog);
+    if (changed) PrepData.saveTodayLog(todayLog);
   }
 
   // Pick the best un-attempted resource: prefer fully-verified & currently-live resources
@@ -267,6 +290,9 @@ const Resources = (() => {
       { id: 'cat-cracku-mock', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'Full Mock', platform: 'Cracku', name: 'CAT Free Mock Tests (3 full + 3 sectional)', url: 'https://cracku.in/cat-mock-test', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
       { id: 'cat-cracku-pyq', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku', name: 'CAT Previous Year Papers', url: 'https://cracku.in/cat-previous-papers/', free: 'Yes', loginRequired: true, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
       { id: 'cat-cracku-daily', exam: 'CAT', section: 'QA', topic: 'All', type: 'Daily Practice', platform: 'Cracku', name: 'CAT Daily Target — VARC, DILR & Quant', url: 'https://cracku.in/cat-daily-target', free: 'Yes', loginRequired: true, difficulty: 2, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cracku-quant-study', exam: 'CAT', section: 'QA', topic: 'All', type: 'Topic Test', platform: 'Cracku', name: 'CAT Quant Study Material — Topic-wise Questions & PDFs', url: 'https://cracku.in/cat-quant-study-material-2025/', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cracku-varc-study', exam: 'CAT', section: 'VARC', topic: 'All', type: 'Topic Test', platform: 'Cracku', name: 'CAT VARC Study Material — Topic-wise Questions & PDFs', url: 'https://cracku.in/cat-varc-study-material-2025/', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cracku-dilr-study', exam: 'CAT', section: 'DILR', topic: 'All', type: 'Topic Test', platform: 'Cracku', name: 'CAT DILR Study Material — Topic-wise Questions & PDFs', url: 'https://cracku.in/cat-dilr-study-material-2025/', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
 
       { id: 'xat-cracku-mock', exam: 'XAT', section: 'Full Mock', topic: 'All', type: 'Full Mock', platform: 'Cracku', name: 'XAT Free Mock Tests', url: 'https://cracku.in/xat-mock-test', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
       { id: 'xat-cracku-sectional', exam: 'XAT', section: 'VALR', topic: 'All', type: 'Sectional', platform: 'Cracku', name: 'XAT Sectional Tests — VARC, DILR & DM', url: 'https://cracku.in/xat/sectional-tests', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },

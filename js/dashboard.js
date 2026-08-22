@@ -10,12 +10,105 @@ const Dashboard = (() => {
   }
 
   function refresh() {
+    renderPendingAlert();
     renderStatCards();
     renderTodaysPlan();
     renderRevisionQueue();
     renderWeaknessPanel();
     renderRecentPerformance();
     renderExamCountdowns();
+    renderCalendar();
+  }
+
+  // ─── Pending-From-Yesterday Alert ───
+  function renderPendingAlert() {
+    const container = document.getElementById('pending-alert');
+    if (!container) return;
+
+    const pending = PrepData.getPendingFromYesterday();
+    if (!pending) {
+      container.style.display = 'none';
+      container.innerHTML = '';
+      return;
+    }
+
+    container.style.display = 'block';
+    container.innerHTML = `
+      <div class="card mb-24" style="border-left: 3px solid var(--danger);">
+        <div class="card-body" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+          <div>
+            <div style="font-weight:600; color:var(--text-primary); font-size:14px">⚠️ ${pending.tasks.length} task(s) left unfinished from yesterday</div>
+            <div style="font-size:13px; color:var(--text-secondary); margin-top:4px">${pending.tasks.map(t => t.name).join(', ')}</div>
+          </div>
+          <button class="btn btn-sm btn-secondary" id="dismiss-pending-alert">Dismiss</button>
+        </div>
+      </div>
+    `;
+
+    const dismissBtn = document.getElementById('dismiss-pending-alert');
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', () => {
+        container.style.display = 'none';
+      });
+    }
+  }
+
+  // ─── Study Calendar ───
+  let calendarMonthOffset = 0;
+
+  function renderCalendar() {
+    const container = document.getElementById('study-calendar');
+    if (!container) return;
+
+    const data = PrepData.getData();
+    const now = new Date();
+    const viewDate = new Date(now.getFullYear(), now.getMonth() + calendarMonthOffset, 1);
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const startWeekday = viewDate.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayStr = now.toISOString().split('T')[0];
+
+    let cells = '';
+    for (let i = 0; i < startWeekday; i++) cells += `<div class="cal-cell empty"></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const log = data.dailyLogs[dateStr];
+      let statusClass = '';
+      if (log && log.tasks.length > 0) {
+        const done = log.tasks.filter(t => t.status === 'done').length;
+        const ratio = done / log.tasks.length;
+        statusClass = ratio >= 0.999 ? 'full' : ratio > 0 ? 'partial' : (dateStr < todayStr ? 'missed' : '');
+      } else if (dateStr < todayStr) {
+        statusClass = 'missed';
+      }
+      const todayClass = dateStr === todayStr ? 'today' : '';
+      cells += `<div class="cal-cell ${todayClass}" title="${dateStr}"><span class="cal-daynum">${d}</span><span class="cal-dot ${statusClass}"></span></div>`;
+    }
+
+    container.innerHTML = `
+      <div class="card-header">
+        <div class="card-title">📅 ${viewDate.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</div>
+        <div class="card-actions">
+          <button class="btn btn-icon btn-ghost btn-sm" id="cal-prev" title="Previous month">‹</button>
+          <button class="btn btn-icon btn-ghost btn-sm" id="cal-next" title="Next month">›</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="cal-weekdays">${['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => `<div>${d}</div>`).join('')}</div>
+        <div class="cal-grid">${cells}</div>
+        <div class="cal-legend">
+          <span><span class="cal-dot full"></span> Full</span>
+          <span><span class="cal-dot partial"></span> Partial</span>
+          <span><span class="cal-dot missed"></span> Missed</span>
+        </div>
+      </div>
+    `;
+
+    const prevBtn = document.getElementById('cal-prev');
+    const nextBtn = document.getElementById('cal-next');
+    if (prevBtn) prevBtn.addEventListener('click', () => { calendarMonthOffset--; renderCalendar(); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { calendarMonthOffset++; renderCalendar(); });
   }
 
   // ─── Stat Cards ───
@@ -84,11 +177,7 @@ const Dashboard = (() => {
     const container = document.getElementById('today-plan');
     if (!container) return;
 
-    let todayLog = PrepData.getTodayLog();
-    if (!todayLog) {
-      todayLog = PrepData.createDailyLog(PrepData.DEFAULT_ROADMAP_TEMPLATE);
-      PrepData.saveTodayLog(todayLog);
-    }
+    const todayLog = PrepData.getOrCreateTodayLog();
 
     const doneTasks = todayLog.tasks.filter(t => t.status === 'done');
     const totalTasks = todayLog.tasks.length;
@@ -152,6 +241,9 @@ const Dashboard = (() => {
       actionHtml = `<a href="${task.resourceLink}" target="_blank" class="btn btn-start-test" data-start-test="${task.id}">START TEST →</a>`;
     } else if (task.type === 'test') {
       actionHtml = `<button class="btn btn-sm btn-secondary" onclick="App.navigateTo('resources')">Find Test</button>`;
+    } else if ((task.type === 'learn' || task.type === 'practice') && task.resourceLink) {
+      const label = task.type === 'learn' ? '📖 Study' : '📝 Practice';
+      actionHtml = `<a href="${task.resourceLink}" target="_blank" class="btn btn-secondary btn-sm">${label} →</a>`;
     }
 
     return `
