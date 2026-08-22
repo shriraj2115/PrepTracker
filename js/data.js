@@ -504,7 +504,9 @@ const PrepData = (() => {
         exam: t.exam || null,
         testType: t.testType || null,
         isPdf: !!t.isPdf,
-        solutionsUrl: t.solutionsUrl || null
+        solutionsUrl: t.solutionsUrl || null,
+        cheatSheetUrl: t.cheatSheetUrl || null,
+        cheatSheetName: t.cheatSheetName || null
       })),
       totalPlanned: tasks.reduce((s, t) => s + t.duration, 0),
       totalActual: 0,
@@ -547,6 +549,36 @@ const PrepData = (() => {
   ];
   const PYQ_CYCLE_DAYS = 6; // one full past paper every 6th day — all 15 fit before the exam
 
+  // Topic-wise formula/cheat-sheet PDFs, bundled with the app. Keyed by the exact
+  // topic name used in EXAM_CONFIG.CAT.topics; a topic can point to more than one
+  // file (all shown in Resources), but the daily task links to the first only.
+  const CAT_CHEAT_SHEETS = {
+    'Number Systems': [
+      { file: 'QA-Number-Systems.pdf', label: 'Number Systems Formulas' },
+      { file: 'QA-Remainder-Theorem.pdf', label: 'Remainder Theorem Formulas' }
+    ],
+    'Geometry': [{ file: 'QA-Geometry.pdf', label: 'Geometry Formulas' }],
+    'Inequalities': [{ file: 'QA-Inequalities.pdf', label: 'Inequalities Formulas' }],
+    'Logarithms': [{ file: 'QA-Logarithms.pdf', label: 'Logarithms, Surds & Indices Formulas' }],
+    'Permutation & Combination': [{ file: 'QA-Permutation-Combination.pdf', label: 'Permutations & Combinations Formulas' }],
+    'Profit & Loss': [{ file: 'QA-Profit-Loss.pdf', label: 'Profit, Loss & Discount Formulas' }],
+    'Algebra': [{ file: 'QA-Quadratic-Equations.pdf', label: 'Quadratic Equations Formulas' }],
+    'Arithmetic': [
+      { file: 'QA-Ratio-Proportion.pdf', label: 'Ratio & Proportion Formulas' },
+      { file: 'QA-Mixtures-Alligations-1.pdf', label: 'Mixtures & Alligations Formulas (1)' },
+      { file: 'QA-Mixtures-Alligations-2.pdf', label: 'Mixtures & Alligations Formulas (2)' },
+      { file: 'QA-Simple-Compound-Interest.pdf', label: 'Simple & Compound Interest Formulas' }
+    ],
+    'Modern Math': [{ file: 'QA-Set-Theory-Venn.pdf', label: 'Set Theory & Venn Diagrams Formulas' }],
+    'Time Speed Distance': [{ file: 'QA-Time-Speed-Distance-Work.pdf', label: 'Time, Speed, Distance & Work Formulas' }],
+    'Time & Work': [
+      { file: 'QA-Time-Speed-Distance-Work.pdf', label: 'Time, Speed, Distance & Work Formulas' },
+      { file: 'QA-Pipes-Cisterns-Practice.pdf', label: 'Pipes & Cisterns Practice (with answers)' }
+    ],
+    'Probability': [{ file: 'QA-Probability-Bayes.pdf', label: 'Probability — Bayes Theorem Formulas' }]
+  };
+  const VARC_CHEAT_SHEET = { file: 'VARC-Cheat-Sheet.pdf', label: 'CAT VARC Cheat Sheet (all topics)' };
+
   function buildCatDailyTasks(dateStr) {
     const topics = EXAM_CONFIG.CAT.topics;
     const dayIdx = getCurriculumDayIndex(dateStr);
@@ -554,9 +586,19 @@ const PrepData = (() => {
     const varcTopic = topics.VARC[dayIdx % topics.VARC.length];
     const dilrTopic = topics.DILR[dayIdx % topics.DILR.length];
 
+    const qaSheet = CAT_CHEAT_SHEETS[qaTopic] && CAT_CHEAT_SHEETS[qaTopic][0];
+
     const tasks = [
-      { name: `Quant — ${qaTopic}`, section: 'QA', topic: qaTopic, type: 'learn', duration: 50, category: 'quant' },
-      { name: `VARC — ${varcTopic}`, section: 'VARC', topic: varcTopic, type: 'practice', duration: 40, category: 'varc' },
+      {
+        name: `Quant — ${qaTopic}`, section: 'QA', topic: qaTopic, type: 'learn', duration: 50, category: 'quant',
+        cheatSheetUrl: qaSheet ? `./data/cheatsheets/${qaSheet.file}` : null,
+        cheatSheetName: qaSheet ? qaSheet.label : null
+      },
+      {
+        name: `VARC — ${varcTopic}`, section: 'VARC', topic: varcTopic, type: 'practice', duration: 40, category: 'varc',
+        cheatSheetUrl: `./data/cheatsheets/${VARC_CHEAT_SHEET.file}`,
+        cheatSheetName: VARC_CHEAT_SHEET.label
+      },
       { name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr' },
       { name: 'Current Affairs', section: 'GK', type: 'read', duration: 20, category: 'gk' },
       { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'banking' },

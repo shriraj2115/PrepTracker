@@ -1,0 +1,127 @@
+[
+  {
+    "file": "VARC-Cheat-Sheet.pdf",
+    "topics": [
+      "VARC"
+    ],
+    "label": "CAT VARC Cheat Sheet (all topics)"
+  },
+  {
+    "file": "QA-Formula-Book-Complete.pdf",
+    "topics": [],
+    "label": "CAT Quant Formula Book \u2014 All Topics (168 pages)"
+  },
+  {
+    "file": "QA-Number-Systems.pdf",
+    "topics": [
+      "Number Systems"
+    ],
+    "label": "Number Systems Formulas"
+  },
+  {
+    "file": "QA-Geometry.pdf",
+    "topics": [
+      "Geometry"
+    ],
+    "label": "Geometry Formulas"
+  },
+  {
+    "file": "QA-Inequalities.pdf",
+    "topics": [
+      "Inequalities"
+    ],
+    "label": "Inequalities Formulas"
+  },
+  {
+    "file": "QA-Logarithms.pdf",
+    "topics": [
+      "Logarithms"
+    ],
+    "label": "Logarithms, Surds & Indices Formulas"
+  },
+  {
+    "file": "QA-Permutation-Combination.pdf",
+    "topics": [
+      "Permutation & Combination"
+    ],
+    "label": "Permutations & Combinations Formulas"
+  },
+  {
+    "file": "QA-Profit-Loss.pdf",
+    "topics": [
+      "Profit & Loss"
+    ],
+    "label": "Profit, Loss & Discount Formulas"
+  },
+  {
+    "file": "QA-Quadratic-Equations.pdf",
+    "topics": [
+      "Algebra"
+    ],
+    "label": "Quadratic Equations Formulas"
+  },
+  {
+    "file": "QA-Ratio-Proportion.pdf",
+    "topics": [
+      "Arithmetic"
+    ],
+    "label": "Ratio & Proportion Formulas"
+  },
+  {
+    "file": "QA-Remainder-Theorem.pdf",
+    "topics": [
+      "Number Systems"
+    ],
+    "label": "Remainder Theorem Formulas"
+  },
+  {
+    "file": "QA-Set-Theory-Venn.pdf",
+    "topics": [
+      "Modern Math"
+    ],
+    "label": "Set Theory & Venn Diagrams Formulas"
+  },
+  {
+    "file": "QA-Time-Speed-Distance-Work.pdf",
+    "topics": [
+      "Time Speed Distance",
+      "Time & Work"
+    ],
+    "label": "Time, Speed, Distance & Work Formulas"
+  },
+  {
+    "file": "QA-Mixtures-Alligations-1.pdf",
+    "topics": [
+      "Arithmetic"
+    ],
+    "label": "Mixtures & Alligations Formulas (1)"
+  },
+  {
+    "file": "QA-Mixtures-Alligations-2.pdf",
+    "topics": [
+      "Arithmetic"
+    ],
+    "label": "Mixtures & Alligations Formulas (2)"
+  },
+  {
+    "file": "QA-Simple-Compound-Interest.pdf",
+    "topics": [
+      "Arithmetic"
+    ],
+    "label": "Simple & Compound Interest Formulas"
+  },
+  {
+    "file": "QA-Probability-Bayes.pdf",
+    "topics": [
+      "Probability"
+    ],
+    "label": "Probability \u2014 Bayes Theorem Formulas"
+  },
+  {
+    "file": "QA-Pipes-Cisterns-Practice.pdf",
+    "topics": [
+      "Time & Work"
+    ],
+    "label": "Pipes & Cisterns Practice (with answers)"
+  }
+]

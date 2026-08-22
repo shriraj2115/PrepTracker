@@ -228,6 +228,13 @@ const Dashboard = (() => {
           });
         });
       }
+
+      const cheatSheetBtn = document.querySelector(`[data-cheat-sheet="${task.id}"]`);
+      if (cheatSheetBtn) {
+        cheatSheetBtn.addEventListener('click', () => {
+          PdfReader.open(task.cheatSheetUrl, task.cheatSheetName || 'Formula Sheet');
+        });
+      }
     });
   }
 
@@ -248,6 +255,10 @@ const Dashboard = (() => {
     } else if ((task.type === 'learn' || task.type === 'practice') && task.resourceLink) {
       const label = task.type === 'learn' ? '📖 Study' : '📝 Practice';
       actionHtml = `<a href="${task.resourceLink}" target="_blank" class="btn btn-secondary btn-sm">${label} →</a>`;
+    }
+
+    if (task.cheatSheetUrl) {
+      actionHtml += `<button class="btn btn-ghost btn-sm" data-cheat-sheet="${task.id}" title="${task.cheatSheetName || 'Formula sheet'}">📐 Cheat Sheet</button>`;
     }
 
     return `

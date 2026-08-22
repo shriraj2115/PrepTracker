@@ -88,8 +88,12 @@ const Resources = (() => {
   // weakest section, else any sectional for this exam, else a full mock. Never re-recommends
   // something already attempted.
   function getRecommendedResource(exam, weakSection) {
+    // Reference material (cheat sheets) and the topic study hubs (used separately for
+    // learn/practice tasks, not scored tests) never belong in "today's test" slot.
+    const studyHubIds = Object.values(STUDY_HUB_BY_SECTION);
     const candidates = allResources.filter(r =>
-      r.exam === exam && r.url && r.url !== '#' && !PrepData.isResourceAttempted(r.id)
+      r.exam === exam && r.url && r.url !== '#' && !PrepData.isResourceAttempted(r.id) &&
+      r.type !== 'Cheat Sheet' && !studyHubIds.includes(r.id)
     );
     if (candidates.length === 0) return null;
 
@@ -117,6 +121,14 @@ const Resources = (() => {
   function startTest(resourceId) {
     const r = allResources.find(x => x.id === resourceId);
     if (!r) return;
+
+    // Reference material (cheat sheets, formula books) is just something to read —
+    // no timer, no score prompt, unlike an actual test/mock/PYQ.
+    if (r.type === 'Cheat Sheet') {
+      PdfReader.open(r.url, r.name);
+      return;
+    }
+
     TestSession.start({
       exam: r.exam,
       section: r.section,
@@ -242,7 +254,7 @@ const Resources = (() => {
           <td>${statusIcon}</td>
           <td>
             ${r.isPdf
-              ? `<button class="btn btn-start-test" onclick="Resources.startTest('${r.id}')">📄 OPEN →</button>`
+              ? `<button class="btn btn-start-test" onclick="Resources.startTest('${r.id}')">${r.type === 'Cheat Sheet' ? '📐 READ →' : '📄 OPEN →'}</button>`
               : r.url && r.url !== '#'
                 ? `<a href="${r.url}" target="_blank" class="btn btn-start-test" onclick="Resources.startTest('${r.id}')">START →</a>`
                 : '<span style="font-size:12px;color:var(--text-tertiary)">Coming soon</span>'}
@@ -339,7 +351,27 @@ const Resources = (() => {
       { id: 'cat-pyq-2024-s3', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2024 Slot 3 — Full Paper', url: './data/pyqs/CAT-2024-Slot-3-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2024-Slot-3-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
       { id: 'cat-pyq-2025-s1', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2025 Slot 1 — Full Paper', url: './data/pyqs/CAT-2025-Slot-1-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2025-Slot-1-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
       { id: 'cat-pyq-2025-s2', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2025 Slot 2 — Full Paper', url: './data/pyqs/CAT-2025-Slot-2-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2025-Slot-2-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
-      { id: 'cat-pyq-2025-s3', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2025 Slot 3 — Full Paper', url: './data/pyqs/CAT-2025-Slot-3-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2025-Slot-3-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' }
+      { id: 'cat-pyq-2025-s3', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2025 Slot 3 — Full Paper', url: './data/pyqs/CAT-2025-Slot-3-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2025-Slot-3-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+
+      // CAT formula/cheat-sheet PDFs — bundled locally, opens inside the app
+      { id: 'cat-cheatsheet-varc-cheat-sheet', exam: 'CAT', section: 'VARC', topic: 'All', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'CAT VARC Cheat Sheet (all topics)', url: './data/cheatsheets/VARC-Cheat-Sheet.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-formula-book-complete', exam: 'CAT', section: 'QA', topic: 'All', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'CAT Quant Formula Book — All Topics (168 pages)', url: './data/cheatsheets/QA-Formula-Book-Complete.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-number-systems', exam: 'CAT', section: 'QA', topic: 'Number Systems', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Number Systems Formulas', url: './data/cheatsheets/QA-Number-Systems.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-remainder-theorem', exam: 'CAT', section: 'QA', topic: 'Number Systems', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Remainder Theorem Formulas', url: './data/cheatsheets/QA-Remainder-Theorem.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-geometry', exam: 'CAT', section: 'QA', topic: 'Geometry', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Geometry Formulas', url: './data/cheatsheets/QA-Geometry.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-inequalities', exam: 'CAT', section: 'QA', topic: 'Inequalities', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Inequalities Formulas', url: './data/cheatsheets/QA-Inequalities.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-logarithms', exam: 'CAT', section: 'QA', topic: 'Logarithms', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Logarithms, Surds & Indices Formulas', url: './data/cheatsheets/QA-Logarithms.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-permutation-combination', exam: 'CAT', section: 'QA', topic: 'Permutation & Combination', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Permutations & Combinations Formulas', url: './data/cheatsheets/QA-Permutation-Combination.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-profit-loss', exam: 'CAT', section: 'QA', topic: 'Profit & Loss', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Profit, Loss & Discount Formulas', url: './data/cheatsheets/QA-Profit-Loss.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-quadratic-equations', exam: 'CAT', section: 'QA', topic: 'Algebra', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Quadratic Equations Formulas', url: './data/cheatsheets/QA-Quadratic-Equations.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-ratio-proportion', exam: 'CAT', section: 'QA', topic: 'Arithmetic', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Ratio & Proportion Formulas', url: './data/cheatsheets/QA-Ratio-Proportion.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-set-theory-venn', exam: 'CAT', section: 'QA', topic: 'Modern Math', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Set Theory & Venn Diagrams Formulas', url: './data/cheatsheets/QA-Set-Theory-Venn.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-time-speed-distance-work', exam: 'CAT', section: 'QA', topic: 'Time Speed Distance', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Time, Speed, Distance & Work Formulas', url: './data/cheatsheets/QA-Time-Speed-Distance-Work.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-mixtures-alligations-1', exam: 'CAT', section: 'QA', topic: 'Arithmetic', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Mixtures & Alligations Formulas (1)', url: './data/cheatsheets/QA-Mixtures-Alligations-1.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-mixtures-alligations-2', exam: 'CAT', section: 'QA', topic: 'Arithmetic', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Mixtures & Alligations Formulas (2)', url: './data/cheatsheets/QA-Mixtures-Alligations-2.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-simple-compound-interest', exam: 'CAT', section: 'QA', topic: 'Arithmetic', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Simple & Compound Interest Formulas', url: './data/cheatsheets/QA-Simple-Compound-Interest.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-probability-bayes', exam: 'CAT', section: 'QA', topic: 'Probability', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Probability — Bayes Theorem Formulas', url: './data/cheatsheets/QA-Probability-Bayes.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-cheatsheet-qa-pipes-cisterns-practice', exam: 'CAT', section: 'QA', topic: 'Time & Work', type: 'Cheat Sheet', platform: 'Bundled with the app', name: 'Pipes & Cisterns Practice (with answers)', url: './data/cheatsheets/QA-Pipes-Cisterns-Practice.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 1, rating: 4, status: 'verified', lastVerified: '2026-08-22' }
     ];
   }
 

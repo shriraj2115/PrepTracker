@@ -81,6 +81,10 @@ Everything — mocks, scores, streaks, settings — is stored **locally on your 
 
 The 15 real CAT papers (Cracku's Slot 1/2/3 papers, 2021–2025) each shipped as one PDF containing both questions and worked solutions. I split each into two separate files — `*-Questions.pdf` and `*-Solutions.pdf` — at the exact page where the paper's own "Answers" key begins, so you can attempt the paper cold and only open the solutions afterward. Nothing was reformatted or re-typed; each half is just the original pages, split cleanly.
 
+## Formula cheat sheets (bundled, `data/cheatsheets/`)
+
+18 topic-wise formula/cheat-sheet PDFs (Number Systems, Geometry, Time-Speed-Distance, Probability, a VARC cheat sheet, a 168-page complete Quant formula book, etc). Whichever Quant/VARC topic the curriculum has you on today automatically gets a **📐 Cheat Sheet** button on that task, opening the matching formula sheet inside the app. All 18 are also individually browsable/searchable on the Resources page (filter by type "Cheat Sheet") — these are reference material, so clicking one just opens it, no timer or score prompt.
+
 ## A note on the resource links
 
 The free mock links were checked at the time they were added (see the "last verified" date on each), but third-party sites change their URLs and offerings over time. If a link looks broken or no longer free, that's the site, not this app — check Settings/Resources periodically, and treat any resource marked "partial" (e.g. the official CAT mock, which only goes live a couple of weeks before the exam) as seasonal.
