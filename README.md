@@ -8,20 +8,41 @@ A minimal, local exam-prep dashboard for CAT, XAT, MAH CET, NMAT, SBI PO, IBPS P
 
 This runs PrepTracker as a real desktop application (Electron) with its own icon, its own window, and — most importantly — **one single, fixed place your data is stored**, so there's no "did I open it the same way as last time" ambiguity at all.
 
-Requires [Node.js](https://nodejs.org) once, to build/run it:
+Closing the window minimizes it to the system tray (bottom-right, near the clock) instead of quitting — right-click the tray icon to reopen it or fully quit. This means reminders and notifications keep working even if you've closed the window.
 
+You need [Node.js](https://nodejs.org) installed once, only to build it — after that, the people you share it with never need Node, npm, or a terminal again.
+
+**Step 1 — one-time setup, in this folder:**
 ```
 npm install
-npm start
 ```
 
-That opens the PrepTracker window directly. Closing the window minimizes it to the system tray (bottom-right, near the clock) instead of quitting — right-click the tray icon to reopen it or fully quit. This means reminders and notifications keep working even if you've closed the window.
+**Step 2 — build a standalone app you can double-click:**
+```
+npm run pack
+```
+This creates `dist\win-unpacked\PrepTracker.exe` — a complete, self-contained app (~180 MB, includes its own runtime). No installer needed:
+1. Open the `dist\win-unpacked` folder.
+2. Right-click `PrepTracker.exe` → **Send to → Desktop (create shortcut)**.
+3. From now on, just double-click that desktop icon — it opens straight to the app, no folder, no terminal, no `npm start`.
 
-To build a standalone installer/exe you can double-click without `npm start` every time:
+You can move the whole `dist\win-unpacked` folder anywhere (a USB drive, another PC, a friend's laptop) and `PrepTracker.exe` still runs — it doesn't need Node.js or this project folder to work.
+
+**Optional — a real installer with Start Menu shortcuts, uninstaller, etc.:**
 ```
 npm run dist
 ```
-The finished installer lands in the `dist/` folder (an `.exe` on Windows, `.dmg` on Mac, `.AppImage` on Linux).
+This needs one extra Windows permission that `npm run pack` doesn't (creating symlinks while packaging code-signing tools). If it fails with `Cannot create symbolic link: A required privilege is not held by the client`, either:
+- turn on **Settings → Privacy & security → For developers → Developer Mode**, then retry, or
+- run the command from an **Administrator** terminal.
+
+The finished installer lands in `dist\` (an `.exe` on Windows, `.dmg` on Mac, `.AppImage` on Linux) and, once run, adds Start Menu/Desktop shortcuts and an uninstaller automatically — `npm run pack` above skips all of that friction and gets you a working desktop icon either way.
+
+**Just want to try it without building anything first?**
+```
+npm start
+```
+Opens the app directly using the source files — useful for a quick look, but Step 2 above is what gives you a real double-click icon.
 
 ### Option B — Browser (no build step)
 
