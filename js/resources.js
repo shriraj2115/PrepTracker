@@ -59,6 +59,8 @@ const Resources = (() => {
         testTask.section = rec.section;
         testTask.testType = rec.type;
         testTask.resourceDuration = getResourceDuration(rec);
+        testTask.isPdf = !!rec.isPdf;
+        testTask.solutionsUrl = rec.solutionsUrl || null;
         changed = true;
       }
     }
@@ -121,7 +123,9 @@ const Resources = (() => {
       testType: r.type,
       name: r.name,
       durationMinutes: getResourceDuration(r),
-      resourceId: r.id
+      resourceId: r.id,
+      pdfUrl: r.isPdf ? r.url : null,
+      solutionsUrl: r.solutionsUrl || null
     });
   }
 
@@ -237,9 +241,11 @@ const Resources = (() => {
           <td><span style="font-size:12px">${freeLabel}</span></td>
           <td>${statusIcon}</td>
           <td>
-            ${r.url && r.url !== '#'
-              ? `<a href="${r.url}" target="_blank" class="btn btn-start-test" onclick="Resources.startTest('${r.id}')">START →</a>`
-              : '<span style="font-size:12px;color:var(--text-tertiary)">Coming soon</span>'}
+            ${r.isPdf
+              ? `<button class="btn btn-start-test" onclick="Resources.startTest('${r.id}')">📄 OPEN →</button>`
+              : r.url && r.url !== '#'
+                ? `<a href="${r.url}" target="_blank" class="btn btn-start-test" onclick="Resources.startTest('${r.id}')">START →</a>`
+                : '<span style="font-size:12px;color:var(--text-tertiary)">Coming soon</span>'}
           </td>
         </tr>
       `;
@@ -316,7 +322,24 @@ const Resources = (() => {
       { id: 'ssc-testbook-mock', exam: 'SSC CGL', section: 'Full Mock', topic: 'All', type: 'Full Mock', platform: 'Testbook', name: 'SSC CGL Test Series — Tier I & II', url: 'https://testbook.com/ssc-cgl/test-series', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
 
       { id: 'rrb-adda-mock', exam: 'RRB NTPC', section: 'Full Mock', topic: 'All', type: 'Full Mock', platform: 'Adda247', name: 'RRB NTPC Mock Test — CBT 1 & 2', url: 'https://www.adda247.com/rrb-ntpc-undergraduate/mock-test', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
-      { id: 'rrb-oliveboard-mock', exam: 'RRB NTPC', section: 'Full Mock', topic: 'All', type: 'Full Mock', platform: 'Oliveboard', name: 'RRB NTPC Mock Test (English & Hindi)', url: 'https://www.oliveboard.in/rrb-ntpc-mock-test/', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' }
+      { id: 'rrb-oliveboard-mock', exam: 'RRB NTPC', section: 'Full Mock', topic: 'All', type: 'Full Mock', platform: 'Oliveboard', name: 'RRB NTPC Mock Test (English & Hindi)', url: 'https://www.oliveboard.in/rrb-ntpc-mock-test/', free: 'Limited', loginRequired: true, difficulty: 3, rating: 4, status: 'verified', lastVerified: '2026-08-22' },
+
+      // CAT PYQ full papers — bundled locally, opens inside the app
+      { id: 'cat-pyq-2021-s1', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2021 Slot 1 — Full Paper', url: './data/pyqs/CAT-2021-Slot-1-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2021-Slot-1-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2021-s2', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2021 Slot 2 — Full Paper', url: './data/pyqs/CAT-2021-Slot-2-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2021-Slot-2-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2021-s3', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2021 Slot 3 — Full Paper', url: './data/pyqs/CAT-2021-Slot-3-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2021-Slot-3-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2022-s1', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2022 Slot 1 — Full Paper', url: './data/pyqs/CAT-2022-Slot-1-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2022-Slot-1-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2022-s2', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2022 Slot 2 — Full Paper', url: './data/pyqs/CAT-2022-Slot-2-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2022-Slot-2-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2022-s3', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2022 Slot 3 — Full Paper', url: './data/pyqs/CAT-2022-Slot-3-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2022-Slot-3-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2023-s1', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2023 Slot 1 — Full Paper', url: './data/pyqs/CAT-2023-Slot-1-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2023-Slot-1-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2023-s2', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2023 Slot 2 — Full Paper', url: './data/pyqs/CAT-2023-Slot-2-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2023-Slot-2-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2023-s3', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2023 Slot 3 — Full Paper', url: './data/pyqs/CAT-2023-Slot-3-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2023-Slot-3-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2024-s1', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2024 Slot 1 — Full Paper', url: './data/pyqs/CAT-2024-Slot-1-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2024-Slot-1-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2024-s2', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2024 Slot 2 — Full Paper', url: './data/pyqs/CAT-2024-Slot-2-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2024-Slot-2-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2024-s3', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2024 Slot 3 — Full Paper', url: './data/pyqs/CAT-2024-Slot-3-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2024-Slot-3-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2025-s1', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2025 Slot 1 — Full Paper', url: './data/pyqs/CAT-2025-Slot-1-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2025-Slot-1-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2025-s2', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2025 Slot 2 — Full Paper', url: './data/pyqs/CAT-2025-Slot-2-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2025-Slot-2-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' },
+      { id: 'cat-pyq-2025-s3', exam: 'CAT', section: 'Full Mock', topic: 'All', type: 'PYQ', platform: 'Cracku (bundled with the app)', name: 'CAT 2025 Slot 3 — Full Paper', url: './data/pyqs/CAT-2025-Slot-3-Questions.pdf', solutionsUrl: './data/pyqs/CAT-2025-Slot-3-Solutions.pdf', isPdf: true, free: 'Yes', loginRequired: false, difficulty: 4, rating: 5, status: 'verified', lastVerified: '2026-08-22' }
     ];
   }
 

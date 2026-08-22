@@ -74,6 +74,12 @@ Everything — mocks, scores, streaks, settings — is stored **locally on your 
 - **Resources** — a curated list of real, checked free mock/practice links per exam. Each entry shows whether it's fully free or free-with-login, and when it was last checked.
 - **Timer** — stopwatch and Pomodoro; time studied here counts toward your daily stats automatically.
 - **Click "START TEST"** anywhere and the app starts a timer for that test's real duration in the background; when it ends (or you click "I'm Done"), it automatically asks for your score — you never have to remember to log it.
+- **CAT syllabus curriculum** — the daily plan isn't generic. It rotates through the entire CAT syllabus starting 23 Aug 2026 (one Quant + one VARC + one DILR topic per day, with a direct link to verified topic-wise practice), so you always know exactly what to study and where.
+- **15 real past CAT papers (2021–2025), built in** — every 6th day swaps the usual short mock/sectional slot for a full past paper instead. Click it and the Questions PDF opens right inside the app (not a new tab, not an external viewer) with the timer running; when you're done, a "View Solutions" button opens the matching Solutions PDF. All 15 papers cycle through by the time the exam arrives.
+
+## PYQ papers (bundled, `data/pyqs/`)
+
+The 15 real CAT papers (Cracku's Slot 1/2/3 papers, 2021–2025) each shipped as one PDF containing both questions and worked solutions. I split each into two separate files — `*-Questions.pdf` and `*-Solutions.pdf` — at the exact page where the paper's own "Answers" key begins, so you can attempt the paper cold and only open the solutions afterward. Nothing was reformatted or re-typed; each half is just the original pages, split cleanly.
 
 ## A note on the resource links
 

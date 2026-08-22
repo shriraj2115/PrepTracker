@@ -498,7 +498,13 @@ const PrepData = (() => {
         status: 'pending', // pending, done, skipped
         actualTime: null,
         resourceLink: t.resourceLink || null,
-        resourceName: t.resourceName || null
+        resourceName: t.resourceName || null,
+        resourceId: t.resourceId || null,
+        resourceDuration: t.resourceDuration || null,
+        exam: t.exam || null,
+        testType: t.testType || null,
+        isPdf: !!t.isPdf,
+        solutionsUrl: t.solutionsUrl || null
       })),
       totalPlanned: tasks.reduce((s, t) => s + t.duration, 0),
       totalActual: 0,
@@ -520,6 +526,27 @@ const PrepData = (() => {
     return Math.max(0, diff);
   }
 
+  // 15 real past CAT papers (2021-2025), bundled with the app, split into a
+  // Questions-only PDF (for attempting cold) and a separate Solutions PDF.
+  const CAT_PYQ_PAPERS = [
+    { id: 'cat-pyq-2021-s1', label: 'CAT 2021 Slot 1', slug: 'CAT-2021-Slot-1' },
+    { id: 'cat-pyq-2021-s2', label: 'CAT 2021 Slot 2', slug: 'CAT-2021-Slot-2' },
+    { id: 'cat-pyq-2021-s3', label: 'CAT 2021 Slot 3', slug: 'CAT-2021-Slot-3' },
+    { id: 'cat-pyq-2022-s1', label: 'CAT 2022 Slot 1', slug: 'CAT-2022-Slot-1' },
+    { id: 'cat-pyq-2022-s2', label: 'CAT 2022 Slot 2', slug: 'CAT-2022-Slot-2' },
+    { id: 'cat-pyq-2022-s3', label: 'CAT 2022 Slot 3', slug: 'CAT-2022-Slot-3' },
+    { id: 'cat-pyq-2023-s1', label: 'CAT 2023 Slot 1', slug: 'CAT-2023-Slot-1' },
+    { id: 'cat-pyq-2023-s2', label: 'CAT 2023 Slot 2', slug: 'CAT-2023-Slot-2' },
+    { id: 'cat-pyq-2023-s3', label: 'CAT 2023 Slot 3', slug: 'CAT-2023-Slot-3' },
+    { id: 'cat-pyq-2024-s1', label: 'CAT 2024 Slot 1', slug: 'CAT-2024-Slot-1' },
+    { id: 'cat-pyq-2024-s2', label: 'CAT 2024 Slot 2', slug: 'CAT-2024-Slot-2' },
+    { id: 'cat-pyq-2024-s3', label: 'CAT 2024 Slot 3', slug: 'CAT-2024-Slot-3' },
+    { id: 'cat-pyq-2025-s1', label: 'CAT 2025 Slot 1', slug: 'CAT-2025-Slot-1' },
+    { id: 'cat-pyq-2025-s2', label: 'CAT 2025 Slot 2', slug: 'CAT-2025-Slot-2' },
+    { id: 'cat-pyq-2025-s3', label: 'CAT 2025 Slot 3', slug: 'CAT-2025-Slot-3' }
+  ];
+  const PYQ_CYCLE_DAYS = 6; // one full past paper every 6th day — all 15 fit before the exam
+
   function buildCatDailyTasks(dateStr) {
     const topics = EXAM_CONFIG.CAT.topics;
     const dayIdx = getCurriculumDayIndex(dateStr);
@@ -527,7 +554,7 @@ const PrepData = (() => {
     const varcTopic = topics.VARC[dayIdx % topics.VARC.length];
     const dilrTopic = topics.DILR[dayIdx % topics.DILR.length];
 
-    return [
+    const tasks = [
       { name: `Quant — ${qaTopic}`, section: 'QA', topic: qaTopic, type: 'learn', duration: 50, category: 'quant' },
       { name: `VARC — ${varcTopic}`, section: 'VARC', topic: varcTopic, type: 'practice', duration: 40, category: 'varc' },
       { name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr' },
@@ -535,6 +562,27 @@ const PrepData = (() => {
       { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'banking' },
       { name: 'Revision', section: null, type: 'review', duration: 20, category: 'review' }
     ];
+
+    if (dayIdx % PYQ_CYCLE_DAYS === PYQ_CYCLE_DAYS - 1) {
+      const paper = CAT_PYQ_PAPERS[Math.floor(dayIdx / PYQ_CYCLE_DAYS) % CAT_PYQ_PAPERS.length];
+      tasks[4] = {
+        name: `CAT PYQ — ${paper.label}`,
+        section: 'Full Mock',
+        type: 'test',
+        duration: 120,
+        category: 'banking',
+        resourceLink: `./data/pyqs/${paper.slug}-Questions.pdf`,
+        resourceName: `${paper.label} — Full Paper`,
+        resourceId: paper.id,
+        resourceDuration: 120,
+        exam: 'CAT',
+        testType: 'PYQ',
+        isPdf: true,
+        solutionsUrl: `./data/pyqs/${paper.slug}-Solutions.pdf`
+      };
+    }
+
+    return tasks;
   }
 
   // Builds today's task list: a real rotating syllabus for CAT, the generic template

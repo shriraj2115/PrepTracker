@@ -1,0 +1,107 @@
+[
+  {
+    "year": 2021,
+    "slot": 1,
+    "slug": "CAT-2021-Slot-1",
+    "questionPages": 27,
+    "solutionPages": 18
+  },
+  {
+    "year": 2021,
+    "slot": 2,
+    "slug": "CAT-2021-Slot-2",
+    "questionPages": 27,
+    "solutionPages": 18
+  },
+  {
+    "year": 2021,
+    "slot": 3,
+    "slug": "CAT-2021-Slot-3",
+    "questionPages": 27,
+    "solutionPages": 19
+  },
+  {
+    "year": 2022,
+    "slot": 1,
+    "slug": "CAT-2022-Slot-1",
+    "questionPages": 27,
+    "solutionPages": 19
+  },
+  {
+    "year": 2022,
+    "slot": 2,
+    "slug": "CAT-2022-Slot-2",
+    "questionPages": 27,
+    "solutionPages": 19
+  },
+  {
+    "year": 2022,
+    "slot": 3,
+    "slug": "CAT-2022-Slot-3",
+    "questionPages": 27,
+    "solutionPages": 19
+  },
+  {
+    "year": 2023,
+    "slot": 1,
+    "slug": "CAT-2023-Slot-1",
+    "questionPages": 27,
+    "solutionPages": 16
+  },
+  {
+    "year": 2023,
+    "slot": 2,
+    "slug": "CAT-2023-Slot-2",
+    "questionPages": 26,
+    "solutionPages": 26
+  },
+  {
+    "year": 2023,
+    "slot": 3,
+    "slug": "CAT-2023-Slot-3",
+    "questionPages": 27,
+    "solutionPages": 21
+  },
+  {
+    "year": 2024,
+    "slot": 1,
+    "slug": "CAT-2024-Slot-1",
+    "questionPages": 28,
+    "solutionPages": 21
+  },
+  {
+    "year": 2024,
+    "slot": 2,
+    "slug": "CAT-2024-Slot-2",
+    "questionPages": 28,
+    "solutionPages": 22
+  },
+  {
+    "year": 2024,
+    "slot": 3,
+    "slug": "CAT-2024-Slot-3",
+    "questionPages": 28,
+    "solutionPages": 28
+  },
+  {
+    "year": 2025,
+    "slot": 1,
+    "slug": "CAT-2025-Slot-1",
+    "questionPages": 28,
+    "solutionPages": 40
+  },
+  {
+    "year": 2025,
+    "slot": 2,
+    "slug": "CAT-2025-Slot-2",
+    "questionPages": 28,
+    "solutionPages": 37
+  },
+  {
+    "year": 2025,
+    "slot": 3,
+    "slug": "CAT-2025-Slot-3",
+    "questionPages": 27,
+    "solutionPages": 39
+  }
+]

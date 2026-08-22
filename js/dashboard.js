@@ -222,7 +222,9 @@ const Dashboard = (() => {
             name: task.resourceName || task.name,
             durationMinutes: task.resourceDuration || task.duration,
             taskId: task.id,
-            resourceId: task.resourceId
+            resourceId: task.resourceId,
+            pdfUrl: task.isPdf ? task.resourceLink : null,
+            solutionsUrl: task.solutionsUrl || null
           });
         });
       }
@@ -237,7 +239,9 @@ const Dashboard = (() => {
     const checkIcon = isCompleted ? '✓' : isSkipped ? '—' : '';
 
     let actionHtml = '';
-    if (task.type === 'test' && task.resourceLink) {
+    if (task.type === 'test' && task.resourceLink && task.isPdf) {
+      actionHtml = `<button class="btn btn-start-test" data-start-test="${task.id}">📄 OPEN TEST →</button>`;
+    } else if (task.type === 'test' && task.resourceLink) {
       actionHtml = `<a href="${task.resourceLink}" target="_blank" class="btn btn-start-test" data-start-test="${task.id}">START TEST →</a>`;
     } else if (task.type === 'test') {
       actionHtml = `<button class="btn btn-sm btn-secondary" onclick="App.navigateTo('resources')">Find Test</button>`;

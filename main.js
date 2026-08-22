@@ -4,7 +4,7 @@
 // no more "did I open it the same way" ambiguity — plus native OS notifications
 // and a system tray icon so reminders still fire while the window is minimized.
 
-const { app, BrowserWindow, Tray, Menu, Notification, nativeImage } = require('electron');
+const { app, BrowserWindow, Tray, Menu, Notification, nativeImage, shell } = require('electron');
 const path = require('path');
 
 let mainWindow = null;
@@ -47,11 +47,19 @@ function createWindow() {
     autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,
-      nodeIntegration: false
+      nodeIntegration: false,
+      plugins: true // needed for the built-in Chromium PDF viewer (PYQ papers open inline)
     }
   });
 
   mainWindow.loadFile('index.html');
+
+  // Resource links use target="_blank" — Electron doesn't open those anywhere by
+  // default. Send them to the user's regular browser instead of a bare Electron window.
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 
   // Minimize to tray instead of quitting, so reminders keep working in the background.
   mainWindow.on('close', (e) => {

@@ -28,7 +28,8 @@ const TestSession = (() => {
       testType: opts.testType || 'Sectional',
       name: opts.name || `${opts.exam} ${opts.section}`,
       taskId: opts.taskId || null,
-      resourceId: opts.resourceId || null
+      resourceId: opts.resourceId || null,
+      solutionsUrl: opts.solutionsUrl || null
     };
 
     const durationMinutes = opts.durationMinutes || 30;
@@ -38,6 +39,11 @@ const TestSession = (() => {
 
     renderBar();
     App.showToast('▶️ Test Started', `${meta.name} — timer running for ${durationMinutes} min`, 'info', 3000);
+
+    // Bundled PDFs (e.g. PYQ papers) open inside the app itself, not a new tab
+    if (opts.pdfUrl && typeof PdfReader !== 'undefined') {
+      PdfReader.open(opts.pdfUrl, meta.name);
+    }
 
     interval = setInterval(() => {
       seconds++;
@@ -84,6 +90,7 @@ const TestSession = (() => {
     active = false;
     const elapsedMinutes = Math.max(1, Math.round(seconds / 60));
     hideBar();
+    if (typeof PdfReader !== 'undefined') PdfReader.close();
 
     if (autoEnded) {
       App.showToast('⏰ Time\'s Up!', `${meta.name} — enter your score now`, 'warning', 6000);
@@ -135,7 +142,18 @@ const TestSession = (() => {
       });
     }
 
+    const solutionsBtn = document.getElementById('ts-view-solutions');
+    if (solutionsBtn) {
+      solutionsBtn.style.display = meta.solutionsUrl ? 'inline-flex' : 'none';
+    }
+
     modal.classList.add('active');
+  }
+
+  function viewSolutions() {
+    if (meta && meta.solutionsUrl) {
+      PdfReader.open(meta.solutionsUrl, `${meta.name} — Solutions`);
+    }
   }
 
   function dismissModal() {
@@ -188,7 +206,7 @@ const TestSession = (() => {
   }
 
   return {
-    start, finishNow, cancel, dismissModal, submitScore,
+    start, finishNow, cancel, dismissModal, submitScore, viewSolutions,
     get isActive() { return active; }
   };
 })();

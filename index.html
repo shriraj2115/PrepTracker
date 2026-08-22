@@ -460,8 +460,22 @@
       </div>
     </div>
     <div class="modal-footer">
+      <button class="btn btn-secondary" id="ts-view-solutions" onclick="TestSession.viewSolutions()" style="display:none">📖 View Solutions</button>
       <button class="btn btn-secondary" onclick="TestSession.dismissModal()">Enter Later</button>
       <button class="btn btn-primary" onclick="TestSession.submitScore()">💾 Save Score</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PDF READER MODAL ═══ -->
+<div class="modal-overlay" id="pdf-reader-modal" onclick="PdfReader.close()">
+  <div class="modal pdf-reader-modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="pdf-reader-title">📄 Document</div>
+      <button class="modal-close" onclick="PdfReader.close()">✕</button>
+    </div>
+    <div class="pdf-reader-body">
+      <iframe id="pdf-reader-frame" src="" title="PDF Viewer"></iframe>
     </div>
   </div>
 </div>
@@ -484,6 +498,7 @@
 <!-- ═══ SCRIPTS ═══ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 <script src="js/data.js"></script>
+<script src="js/pdf-reader.js"></script>
 <script src="js/test-session.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/mock-entry.js"></script>
