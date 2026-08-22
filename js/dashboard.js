@@ -392,7 +392,7 @@ const Dashboard = (() => {
 
     const settings = PrepData.getSettings();
     const primaryExam = settings.targetExams[0] || 'CAT';
-    const weakTopics = PrepData.getWeakTopics(primaryExam).slice(0, 5);
+    const weakTopics = PrepData.getWeakTopics(primaryExam).slice(0, 3);
 
     if (weakTopics.length === 0) {
       container.innerHTML = `
@@ -439,7 +439,7 @@ const Dashboard = (() => {
     if (!container) return;
 
     const mocks = PrepData.getMocks();
-    const recent = mocks.slice(-5);
+    const recent = mocks.slice(-3);
 
     if (recent.length === 0) {
       container.innerHTML = `
