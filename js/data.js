@@ -963,8 +963,23 @@ const PrepData = (() => {
       section: entry.section,
       topic: entry.topic,
       note: entry.note,
-      reminder: entry.reminder || `Revise ${entry.topic} tomorrow`
+      reminder: entry.reminder || `Revise ${entry.topic} tomorrow`,
+      resolved: false
     });
+    saveData(data);
+  }
+
+  function getErrorLog(exam = null) {
+    const data = getData();
+    let log = [...data.errorLog].reverse(); // most recent first
+    if (exam) log = log.filter(e => e.exam === exam);
+    return log;
+  }
+
+  function resolveErrorLogEntry(id) {
+    const data = getData();
+    const entry = data.errorLog.find(e => e.id === id);
+    if (entry) entry.resolved = true;
     saveData(data);
   }
 
@@ -1071,6 +1086,8 @@ const PrepData = (() => {
     isResourceAttempted,
 
     addErrorLogEntry,
+    getErrorLog,
+    resolveErrorLogEntry,
     checkAchievements,
     ACHIEVEMENTS,
 

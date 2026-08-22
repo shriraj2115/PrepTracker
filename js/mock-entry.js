@@ -223,6 +223,7 @@ const MockEntry = (() => {
       const time = parseFloat(document.getElementById('mock-time')?.value);
       const weakTopic = document.getElementById('mock-weak-topic')?.value || null;
       const mistakeType = document.getElementById('mock-mistake')?.value || null;
+      const errorNote = document.getElementById('mock-error-note')?.value.trim() || null;
 
       // Validation
       if (!exam || !section || !testType) {
@@ -244,6 +245,10 @@ const MockEntry = (() => {
       });
       Achievements.refreshCount();
 
+      if (errorNote) {
+        PrepData.addErrorLogEntry({ exam, section, topic: weakTopic || section, note: errorNote });
+      }
+
       // Show success with key stats
       App.showToast(
         '✅ Mock Saved!',
@@ -264,6 +269,7 @@ const MockEntry = (() => {
       document.getElementById('mock-time').value = '';
       document.getElementById('mock-weak-topic').value = '';
       document.getElementById('mock-mistake').value = '';
+      document.getElementById('mock-error-note').value = '';
       document.getElementById('calc-results').innerHTML = '';
       document.getElementById('calc-results').style.display = 'none';
 

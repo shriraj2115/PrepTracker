@@ -18,6 +18,7 @@ const Analytics = (() => {
     renderExamReadiness();
     renderMistakeTypeChart();
     renderMistakeTypePanel();
+    renderErrorLog();
   }
 
   function destroyChart(name) {
@@ -498,6 +499,71 @@ const Analytics = (() => {
         </div>
       </div>
     `;
+  }
+
+  // ─── Error Log ───
+  // Optional free-text notes on important/repeated mistakes — deliberately not
+  // one entry per wrong question, just the handful worth remembering later.
+  function renderErrorLog() {
+    const container = document.getElementById('error-log-panel');
+    if (!container) return;
+
+    const settings = PrepData.getSettings();
+    const primaryExam = settings.targetExams[0] || 'CAT';
+    const entries = PrepData.getErrorLog(primaryExam);
+
+    if (entries.length === 0) {
+      container.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">📓 Error Notes</div>
+        </div>
+        <div class="card-body">
+          <div class="empty-state" style="padding: 16px 0">
+            <div style="font-size: 13px; color: var(--text-tertiary)">Nothing logged yet — when entering a score, use the optional "Error Note" field for mistakes worth remembering</div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const unresolved = entries.filter(e => !e.resolved);
+    const shown = entries.slice(0, 10);
+
+    container.innerHTML = `
+      <div class="card-header">
+        <div>
+          <div class="card-title">📓 Error Notes</div>
+          <div class="card-subtitle">Important/repeated mistakes, not every wrong answer</div>
+        </div>
+        <span class="badge badge-warning">${unresolved.length} active</span>
+      </div>
+      <div class="card-body-compact">
+        <ul class="task-list">
+          ${shown.map(e => `
+            <li class="task-item ${e.resolved ? 'completed' : ''}" data-error-id="${e.id}">
+              <div class="task-checkbox ${e.resolved ? 'checked' : ''}" data-error-check="${e.id}" title="Mark reviewed">${e.resolved ? '✓' : ''}</div>
+              <div class="task-info">
+                <div class="task-name">${e.note}</div>
+                <div class="task-meta">
+                  <span class="task-category dilr">${e.topic || e.section}</span>
+                  <span>${new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                </div>
+              </div>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+    `;
+
+    entries.forEach(e => {
+      const checkbox = document.querySelector(`[data-error-check="${e.id}"]`);
+      if (checkbox) {
+        checkbox.addEventListener('click', () => {
+          PrepData.resolveErrorLogEntry(e.id);
+          renderErrorLog();
+        });
+      }
+    });
   }
 
   return { init, refresh };

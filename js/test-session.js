@@ -123,6 +123,7 @@ const TestSession = (() => {
     document.getElementById('ts-attempted').value = '';
     document.getElementById('ts-correct').value = '';
     document.getElementById('ts-time').value = elapsedMinutes;
+    document.getElementById('ts-error-note').value = '';
 
     const config = PrepData.EXAM_CONFIG[meta.exam];
     const topicSelect = document.getElementById('ts-weak-topic');
@@ -171,6 +172,7 @@ const TestSession = (() => {
     const time = parseFloat(document.getElementById('ts-time').value);
     const weakTopic = document.getElementById('ts-weak-topic').value || null;
     const mistakeType = document.getElementById('ts-mistake').value || null;
+    const errorNote = document.getElementById('ts-error-note')?.value.trim() || null;
 
     if (isNaN(score) || isNaN(attempted) || isNaN(correct) || isNaN(time)) {
       App.showToast('Missing Fields', 'Please fill score, attempted, correct, and time', 'warning');
@@ -188,6 +190,9 @@ const TestSession = (() => {
 
     if (meta.resourceId) {
       PrepData.markResourceAttempted(meta.resourceId, score, entry.accuracy);
+    }
+    if (errorNote) {
+      PrepData.addErrorLogEntry({ exam: meta.exam, section: meta.section, topic: weakTopic || meta.section, note: errorNote });
     }
     Achievements.refreshCount();
     if (meta.taskId) {
