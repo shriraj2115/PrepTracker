@@ -1,0 +1,149 @@
+[
+  {
+    "slug": "DILR-DI-Basics",
+    "topic": "Data Interpretation",
+    "label": "Data Interpretation Basics (103 Qs)",
+    "questionPages": 58,
+    "solutionPages": 27
+  },
+  {
+    "slug": "DILR-DI-General",
+    "topic": "Data Interpretation",
+    "label": "Data Interpretation (12 Qs)",
+    "questionPages": 8,
+    "solutionPages": 13
+  },
+  {
+    "slug": "DILR-Arrangements",
+    "topic": "Arrangements",
+    "label": "Arrangement Questions (121 Qs)",
+    "questionPages": 59,
+    "solutionPages": 113
+  },
+  {
+    "slug": "DILR-Networks",
+    "topic": "Networks",
+    "label": "Routes & Networks (13 Qs)",
+    "questionPages": 9,
+    "solutionPages": 11
+  },
+  {
+    "slug": "DILR-LR-Misc",
+    "topic": null,
+    "label": "Miscellaneous LR (14 Qs)",
+    "questionPages": 8,
+    "solutionPages": 6
+  },
+  {
+    "slug": "DILR-Charts",
+    "topic": "Data Interpretation",
+    "label": "Charts (163 Qs)",
+    "questionPages": 111,
+    "solutionPages": 56
+  },
+  {
+    "slug": "DILR-Maxima-Minima",
+    "topic": "Puzzles",
+    "label": "Maxima-Minima (24 Qs)",
+    "questionPages": 16,
+    "solutionPages": 25
+  },
+  {
+    "slug": "DILR-Truth-Lie",
+    "topic": "Puzzles",
+    "label": "Truth Lie Concept (3 Qs)",
+    "questionPages": 3,
+    "solutionPages": 2
+  },
+  {
+    "slug": "DILR-Scheduling",
+    "topic": "Puzzles",
+    "label": "Scheduling (34 Qs)",
+    "questionPages": 26,
+    "solutionPages": 31
+  },
+  {
+    "slug": "DILR-DI-Connected-Datasets",
+    "topic": "Data Interpretation",
+    "label": "DI with Connected Data Sets (35 Qs)",
+    "questionPages": 17,
+    "solutionPages": 8
+  },
+  {
+    "slug": "DILR-DI-Misc",
+    "topic": "Data Interpretation",
+    "label": "DI Miscellaneous (4 Qs)",
+    "questionPages": 3,
+    "solutionPages": 4
+  },
+  {
+    "slug": "DILR-Selection-With-Condition",
+    "topic": "Puzzles",
+    "label": "Selection With Condition (41 Qs)",
+    "questionPages": 23,
+    "solutionPages": 23
+  },
+  {
+    "slug": "DILR-Venn-Diagrams",
+    "topic": "Data Interpretation",
+    "label": "Venn Diagrams (48 Qs)",
+    "questionPages": 26,
+    "solutionPages": 69
+  },
+  {
+    "slug": "DILR-2D-3D-LR",
+    "topic": "Arrangements",
+    "label": "2D & 3D LR (54 Qs)",
+    "questionPages": 32,
+    "solutionPages": 37
+  },
+  {
+    "slug": "DILR-Quant-Based-DI",
+    "topic": "Data Interpretation",
+    "label": "Quant Based DI (54 Qs)",
+    "questionPages": 39,
+    "solutionPages": 36
+  },
+  {
+    "slug": "DILR-Special-Charts",
+    "topic": "Data Interpretation",
+    "label": "Special Charts (54 Qs)",
+    "questionPages": 31,
+    "solutionPages": 35
+  },
+  {
+    "slug": "DILR-Games-Tournaments",
+    "topic": "Games & Tournaments",
+    "label": "Games & Tournaments (61 Qs)",
+    "questionPages": 35,
+    "solutionPages": 80
+  },
+  {
+    "slug": "DILR-Data-Change-Over-Period",
+    "topic": "Data Interpretation",
+    "label": "Data Change Over a Period (75 Qs)",
+    "questionPages": 32,
+    "solutionPages": 18
+  },
+  {
+    "slug": "DILR-Table-Missing-Values",
+    "topic": "Data Interpretation",
+    "label": "Table with Missing Values (75 Qs)",
+    "questionPages": 57,
+    "solutionPages": 85
+  },
+  {
+    "slug": "DILR-Coins-Weights",
+    "topic": "Puzzles",
+    "label": "Coins & Weights (8 Qs)",
+    "questionPages": 4,
+    "solutionPages": 3
+  },
+  {
+    "slug": "DILR-Puzzles-General",
+    "topic": "Puzzles",
+    "label": "Puzzles (80 Qs)",
+    "questionPages": 41,
+    "solutionPages": 109
+  }
+]

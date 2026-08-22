@@ -579,6 +579,38 @@ const PrepData = (() => {
   };
   const VARC_CHEAT_SHEET = { file: 'VARC-Cheat-Sheet.pdf', label: 'CAT VARC Cheat Sheet (all topics)' };
 
+  // Topic-wise DILR practice sets (real questions + solutions), bundled with the app.
+  // A topic can have several sets — the daily task cycles through them each time that
+  // topic comes up again, instead of repeating the same one every 7 days.
+  const DILR_PRACTICE_SETS = {
+    'Data Interpretation': [
+      { slug: 'DILR-DI-Basics', label: 'Data Interpretation Basics (103 Qs)' },
+      { slug: 'DILR-DI-General', label: 'Data Interpretation (12 Qs)' },
+      { slug: 'DILR-Charts', label: 'Charts (163 Qs)' },
+      { slug: 'DILR-DI-Connected-Datasets', label: 'DI with Connected Data Sets (35 Qs)' },
+      { slug: 'DILR-DI-Misc', label: 'DI Miscellaneous (4 Qs)' },
+      { slug: 'DILR-Venn-Diagrams', label: 'Venn Diagrams (48 Qs)' },
+      { slug: 'DILR-Quant-Based-DI', label: 'Quant Based DI (54 Qs)' },
+      { slug: 'DILR-Special-Charts', label: 'Special Charts (54 Qs)' },
+      { slug: 'DILR-Data-Change-Over-Period', label: 'Data Change Over a Period (75 Qs)' },
+      { slug: 'DILR-Table-Missing-Values', label: 'Table with Missing Values (75 Qs)' }
+    ],
+    'Arrangements': [
+      { slug: 'DILR-Arrangements', label: 'Arrangement Questions (121 Qs)' },
+      { slug: 'DILR-2D-3D-LR', label: '2D & 3D LR (54 Qs)' }
+    ],
+    'Puzzles': [
+      { slug: 'DILR-Puzzles-General', label: 'Puzzles (80 Qs)' },
+      { slug: 'DILR-Scheduling', label: 'Scheduling (34 Qs)' },
+      { slug: 'DILR-Selection-With-Condition', label: 'Selection With Condition (41 Qs)' },
+      { slug: 'DILR-Maxima-Minima', label: 'Maxima-Minima (24 Qs)' },
+      { slug: 'DILR-Coins-Weights', label: 'Coins & Weights (8 Qs)' },
+      { slug: 'DILR-Truth-Lie', label: 'Truth Lie Concept (3 Qs)' }
+    ],
+    'Games & Tournaments': [{ slug: 'DILR-Games-Tournaments', label: 'Games & Tournaments (61 Qs)' }],
+    'Networks': [{ slug: 'DILR-Networks', label: 'Routes & Networks (13 Qs)' }]
+  };
+
   function buildCatDailyTasks(dateStr) {
     const topics = EXAM_CONFIG.CAT.topics;
     const dayIdx = getCurriculumDayIndex(dateStr);
@@ -587,6 +619,9 @@ const PrepData = (() => {
     const dilrTopic = topics.DILR[dayIdx % topics.DILR.length];
 
     const qaSheet = CAT_CHEAT_SHEETS[qaTopic] && CAT_CHEAT_SHEETS[qaTopic][0];
+
+    const dilrSets = DILR_PRACTICE_SETS[dilrTopic];
+    const dilrSet = dilrSets ? dilrSets[Math.floor(dayIdx / topics.DILR.length) % dilrSets.length] : null;
 
     const tasks = [
       {
@@ -599,7 +634,15 @@ const PrepData = (() => {
         cheatSheetUrl: `./data/cheatsheets/${VARC_CHEAT_SHEET.file}`,
         cheatSheetName: VARC_CHEAT_SHEET.label
       },
-      { name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr' },
+      dilrSet
+        ? {
+            name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr',
+            resourceLink: `./data/lrdi/${dilrSet.slug}-Questions.pdf`,
+            resourceName: dilrSet.label,
+            solutionsUrl: `./data/lrdi/${dilrSet.slug}-Solutions.pdf`,
+            isPdf: true
+          }
+        : { name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr' },
       { name: 'Current Affairs', section: 'GK', type: 'read', duration: 20, category: 'gk' },
       { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'banking' },
       { name: 'Revision', section: null, type: 'review', duration: 20, category: 'review' }

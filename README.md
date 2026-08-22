@@ -89,6 +89,10 @@ The 15 real CAT papers (Cracku's Slot 1/2/3 papers, 2021–2025) each shipped as
 
 18 topic-wise formula/cheat-sheet PDFs (Number Systems, Geometry, Time-Speed-Distance, Probability, a VARC cheat sheet, a 168-page complete Quant formula book, etc). Whichever Quant/VARC topic the curriculum has you on today automatically gets a **📐 Cheat Sheet** button on that task, opening the matching formula sheet inside the app. All 18 are also individually browsable/searchable on the Resources page (filter by type "Cheat Sheet") — these are reference material, so clicking one just opens it, no timer or score prompt.
 
+## DILR practice sets (bundled, `data/lrdi/`)
+
+21 topic-wise DILR question sets (3–163 questions each — Arrangements, Puzzles, Data Interpretation, Charts, Games & Tournaments, Networks, and more), same Questions/Solutions split as the PYQ papers. Whichever DILR topic comes up in the curriculum gets a matching set automatically, with **📝 Practice** and **✅ Solutions** buttons on that task; topics with multiple sets (e.g. Data Interpretation has 10) cycle through a different one each time that topic recurs, instead of repeating the same set every week. These are open-ended practice, not timed tests, so — like cheat sheets — clicking one just opens it, no timer or score prompt. Also individually browsable on the Resources page under type "Practice Set".
+
 ## A note on the resource links
 
 The free mock links were checked at the time they were added (see the "last verified" date on each), but third-party sites change their URLs and offerings over time. If a link looks broken or no longer free, that's the site, not this app — check Settings/Resources periodically, and treat any resource marked "partial" (e.g. the official CAT mock, which only goes live a couple of weeks before the exam) as seasonal.

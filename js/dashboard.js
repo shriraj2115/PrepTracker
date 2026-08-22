@@ -235,6 +235,20 @@ const Dashboard = (() => {
           PdfReader.open(task.cheatSheetUrl, task.cheatSheetName || 'Formula Sheet');
         });
       }
+
+      const practicePdfBtn = document.querySelector(`[data-practice-pdf="${task.id}"]`);
+      if (practicePdfBtn) {
+        practicePdfBtn.addEventListener('click', () => {
+          PdfReader.open(task.resourceLink, task.resourceName || task.name);
+        });
+      }
+
+      const practiceSolutionsBtn = document.querySelector(`[data-practice-solutions="${task.id}"]`);
+      if (practiceSolutionsBtn) {
+        practiceSolutionsBtn.addEventListener('click', () => {
+          PdfReader.open(task.solutionsUrl, `${task.resourceName || task.name} — Solutions`);
+        });
+      }
     });
   }
 
@@ -252,6 +266,9 @@ const Dashboard = (() => {
       actionHtml = `<a href="${task.resourceLink}" target="_blank" class="btn btn-start-test" data-start-test="${task.id}">START TEST →</a>`;
     } else if (task.type === 'test') {
       actionHtml = `<button class="btn btn-sm btn-secondary" onclick="App.navigateTo('resources')">Find Test</button>`;
+    } else if ((task.type === 'learn' || task.type === 'practice') && task.resourceLink && task.isPdf) {
+      const label = task.type === 'learn' ? '📖 Study' : '📝 Practice';
+      actionHtml = `<button class="btn btn-secondary btn-sm" data-practice-pdf="${task.id}">${label} →</button>`;
     } else if ((task.type === 'learn' || task.type === 'practice') && task.resourceLink) {
       const label = task.type === 'learn' ? '📖 Study' : '📝 Practice';
       actionHtml = `<a href="${task.resourceLink}" target="_blank" class="btn btn-secondary btn-sm">${label} →</a>`;
@@ -259,6 +276,9 @@ const Dashboard = (() => {
 
     if (task.cheatSheetUrl) {
       actionHtml += `<button class="btn btn-ghost btn-sm" data-cheat-sheet="${task.id}" title="${task.cheatSheetName || 'Formula sheet'}">📐 Cheat Sheet</button>`;
+    }
+    if (task.solutionsUrl && task.type !== 'test') {
+      actionHtml += `<button class="btn btn-ghost btn-sm" data-practice-solutions="${task.id}" title="Solutions">✅ Solutions</button>`;
     }
 
     return `
