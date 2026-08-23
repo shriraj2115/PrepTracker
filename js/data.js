@@ -247,7 +247,7 @@ const PrepData = (() => {
     { name: 'VARC Practice', section: 'VARC', type: 'practice', duration: 40, category: 'varc' },
     { name: 'DILR Practice', section: 'DILR', type: 'practice', duration: 45, category: 'dilr' },
     { name: 'Current Affairs', section: 'GK', type: 'read', duration: 20, category: 'gk' },
-    { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'banking' },
+    { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'mock' },
     { name: 'Revision', section: null, type: 'review', duration: 20, category: 'review' }
   ];
 
@@ -646,7 +646,7 @@ const PrepData = (() => {
           }
         : { name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr' },
       { name: 'Current Affairs', section: 'GK', type: 'read', duration: 20, category: 'gk' },
-      { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'banking' },
+      { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'mock' },
       { name: 'Revision', section: null, type: 'review', duration: 20, category: 'review' }
     ];
 
@@ -657,7 +657,7 @@ const PrepData = (() => {
         section: 'Full Mock',
         type: 'test',
         duration: 120,
-        category: 'banking',
+        category: 'mock',
         resourceLink: `./data/pyqs/${paper.slug}-Questions.pdf`,
         resourceName: `${paper.label} — Full Paper`,
         resourceId: paper.id,

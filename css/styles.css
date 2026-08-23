@@ -858,7 +858,7 @@ input, select, textarea {
 .task-category.dilr { background: rgba(118, 75, 162, 0.1); color: #764ba2; }
 .task-category.varc { background: var(--success-light); color: var(--success); }
 .task-category.gk { background: var(--warning-light); color: var(--warning); }
-.task-category.banking { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+.task-category.mock { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
 .task-category.review { background: var(--danger-light); color: var(--danger); }
 
 .task-duration {
