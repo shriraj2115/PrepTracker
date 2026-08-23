@@ -5,7 +5,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 const Celebration = (() => {
-  const COLORS = ['#d88fa3', '#a591cf', '#6fae86', '#d9a84e', '#dd8188', '#7fb0c4', '#e0b0c0'];
+  const COLORS = ['#ec4899', '#8b5cf6', '#22c55e', '#f59e0b', '#ef4444', '#06b6d4', '#f97316'];
 
   function confetti(count = 60) {
     const container = document.createElement('div');

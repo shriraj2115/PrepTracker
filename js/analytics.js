@@ -80,7 +80,7 @@ const Analytics = (() => {
     const sections = Object.keys(config.sections);
     const datasets = sections.map((sec, i) => {
       const mocks = PrepData.getMocks({ exam: primaryExam, section: sec });
-      const colors = ['#d88fa3', '#a591cf', '#6fae86', '#d9a84e', '#dd8188', '#7fb0c4'];
+      const colors = ['#ec4899', '#8b5cf6', '#22c55e', '#f59e0b', '#ef4444', '#06b6d4'];
       return {
         label: sec,
         data: mocks.map(m => m.accuracy),
@@ -153,10 +153,10 @@ const Analytics = (() => {
         datasets: [{
           label: `${primaryExam} Section Strength`,
           data,
-          backgroundColor: 'rgba(216, 143, 163, 0.2)',
-          borderColor: '#d88fa3',
+          backgroundColor: 'rgba(236, 72, 153, 0.2)',
+          borderColor: '#ec4899',
           borderWidth: 2,
-          pointBackgroundColor: '#d88fa3',
+          pointBackgroundColor: '#ec4899',
           pointRadius: 5,
           pointHoverRadius: 7
         }]
@@ -198,7 +198,7 @@ const Analytics = (() => {
 
     const labels = weakTopics.map(w => w.topic);
     const data = weakTopics.map(w => Math.round(w.avgAccuracy));
-    const colors = data.map(v => v < 50 ? '#dd8188' : v < 70 ? '#d9a84e' : '#6fae86');
+    const colors = data.map(v => v < 50 ? '#ef4444' : v < 70 ? '#f59e0b' : '#22c55e');
 
     charts.weaknessBar = new Chart(canvas, {
       type: 'bar',
@@ -257,7 +257,7 @@ const Analytics = (() => {
         datasets: [{
           label: 'Study Hours',
           data: values,
-          backgroundColor: values.map((v, i) => i === 6 ? '#a591cf' : '#d88fa380'),
+          backgroundColor: values.map((v, i) => i === 6 ? '#8b5cf6' : '#ec489980'),
           borderRadius: 8,
           barThickness: 32
         }]
@@ -411,7 +411,7 @@ const Analytics = (() => {
     const stats = PrepData.getMistakeTypeStats(primaryExam);
     if (!stats) return;
 
-    const colors = ['#dd8188', '#d9a84e', '#d88fa3', '#a591cf', '#7fb0c4', '#6fae86', '#e0b0c0', '#b691a0'];
+    const colors = ['#ef4444', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#22c55e', '#f97316', '#f472b6'];
     const labels = stats.breakdown.map(b => b.type);
     const data = stats.breakdown.map(b => b.count);
 

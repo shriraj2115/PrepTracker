@@ -25,25 +25,25 @@
 
   --border-color: #f2d4dc;
   --border-light: #f8e8ec;
-  --border-focus: #d88fa3;
+  --border-focus: #ec4899;
 
-  --accent-primary: #d88fa3;
-  --accent-primary-light: rgba(216, 143, 163, 0.15);
-  --accent-primary-dark: #c26f86;
-  --accent-gradient: linear-gradient(135deg, #e8a4b8 0%, #d88fa3 100%);
-  --accent-gradient-hover: linear-gradient(135deg, #dd8fa5 0%, #c26f86 100%);
+  --accent-primary: #ec4899;
+  --accent-primary-light: rgba(236, 72, 153, 0.15);
+  --accent-primary-dark: #db2777;
+  --accent-gradient: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
 
-  --success: #6fae86;
-  --success-light: rgba(111, 174, 134, 0.15);
-  --success-bg: rgba(111, 174, 134, 0.1);
-  --warning: #d9a84e;
-  --warning-light: rgba(217, 168, 78, 0.15);
-  --warning-bg: rgba(217, 168, 78, 0.1);
-  --danger: #dd8188;
-  --danger-light: rgba(221, 129, 136, 0.15);
-  --danger-bg: rgba(221, 129, 136, 0.1);
-  --info: #a591cf;
-  --info-light: rgba(165, 145, 207, 0.15);
+  --success: #22c55e;
+  --success-light: rgba(34, 197, 94, 0.15);
+  --success-bg: rgba(34, 197, 94, 0.1);
+  --warning: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.15);
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --danger: #ef4444;
+  --danger-light: rgba(239, 68, 68, 0.15);
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --info: #8b5cf6;
+  --info-light: rgba(139, 92, 246, 0.15);
 
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(92, 42, 58, 0.05);
@@ -55,7 +55,7 @@
 
   /* Glass effect */
   --glass-bg: rgba(255, 245, 248, 0.7);
-  --glass-border: rgba(216, 143, 163, 0.25);
+  --glass-border: rgba(236, 72, 153, 0.25);
   --glass-blur: 12px;
 
   /* Spacing */
@@ -81,12 +81,12 @@
   --z-tooltip: 700;
 
   /* Chart colors */
-  --chart-1: #d88fa3;
-  --chart-2: #a591cf;
-  --chart-3: #6fae86;
-  --chart-4: #d9a84e;
-  --chart-5: #dd8188;
-  --chart-6: #7fb0c4;
+  --chart-1: #ec4899;
+  --chart-2: #8b5cf6;
+  --chart-3: #22c55e;
+  --chart-4: #f59e0b;
+  --chart-5: #06b6d4;
+  --chart-6: #f97316;
 }
 
 /* ─── Dark Theme ─── */
@@ -108,17 +108,17 @@
 
   --border-color: #2a2f42;
   --border-light: #1e2336;
-  --border-focus: #d88fa3;
+  --border-focus: #ec4899;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.25);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.35);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-card-hover: 0 10px 30px rgba(216, 143, 163, 0.15);
+  --shadow-card-hover: 0 10px 30px rgba(236, 72, 153, 0.15);
 
   --glass-bg: rgba(22, 27, 46, 0.8);
-  --glass-border: rgba(216, 143, 163, 0.15);
+  --glass-border: rgba(236, 72, 153, 0.15);
 }
 
 /* ─── Base Reset ─── */
@@ -855,7 +855,7 @@ input, select, textarea {
 }
 
 .task-category.quant { background: var(--info-light); color: var(--info); }
-.task-category.dilr { background: rgba(165, 145, 207, 0.2); color: #8a6bb8; }
+.task-category.dilr { background: rgba(139, 92, 246, 0.18); color: #7c3aed; }
 .task-category.varc { background: var(--success-light); color: var(--success); }
 .task-category.gk { background: var(--warning-light); color: var(--warning); }
 .task-category.mock { background: var(--accent-primary-light); color: var(--accent-primary-dark); }
