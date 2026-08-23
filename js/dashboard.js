@@ -6,7 +6,7 @@
 const Dashboard = (() => {
 
   function init() {
-    // Dashboard initializes on first load via refresh
+    planDayOffset = 0; // always land on Today's Plan when the app opens
   }
 
   function refresh() {
@@ -34,23 +34,109 @@ const Dashboard = (() => {
 
     container.style.display = 'block';
     container.innerHTML = `
-      <div class="card mb-24" style="border-left: 3px solid var(--danger);">
+      <div class="card mb-24" style="border-left: 3px solid var(--danger); cursor:pointer;" id="pending-alert-card">
         <div class="card-body" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
           <div>
             <div style="font-weight:600; color:var(--text-primary); font-size:14px">⚠️ ${pending.tasks.length} task(s) left unfinished from yesterday</div>
             <div style="font-size:13px; color:var(--text-secondary); margin-top:4px">${pending.tasks.map(t => t.name).join(', ')}</div>
           </div>
-          <button class="btn btn-sm btn-secondary" id="dismiss-pending-alert">Dismiss</button>
+          <div style="display:flex; gap:8px; flex-shrink:0;">
+            <button class="btn btn-sm btn-primary" id="review-pending-alert">Review →</button>
+            <button class="btn btn-sm btn-secondary" id="dismiss-pending-alert">Dismiss</button>
+          </div>
         </div>
       </div>
     `;
 
+    const cardEl = document.getElementById('pending-alert-card');
+    if (cardEl) {
+      cardEl.addEventListener('click', () => openPendingModal(pending));
+    }
+
+    const reviewBtn = document.getElementById('review-pending-alert');
+    if (reviewBtn) {
+      reviewBtn.addEventListener('click', (e) => { e.stopPropagation(); openPendingModal(pending); });
+    }
+
     const dismissBtn = document.getElementById('dismiss-pending-alert');
     if (dismissBtn) {
-      dismissBtn.addEventListener('click', () => {
+      dismissBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         container.style.display = 'none';
       });
     }
+  }
+
+  // ─── Pending Tasks Modal (mark yesterday's left-over tasks Complete/Dismiss) ───
+  function openPendingModal(pending) {
+    const modal = document.getElementById('pending-tasks-modal');
+    const list = document.getElementById('pending-modal-list');
+    const subtitle = document.getElementById('pending-modal-subtitle');
+    if (!modal || !list) return;
+
+    const niceDate = new Date(pending.date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
+    if (subtitle) subtitle.textContent = niceDate;
+
+    renderPendingModalList(pending.date);
+    modal.classList.add('active');
+  }
+
+  function renderPendingModalList(dateStr) {
+    const list = document.getElementById('pending-modal-list');
+    if (!list) return;
+
+    const log = PrepData.getDailyLog(dateStr);
+    const pendingTasks = log ? log.tasks.filter(t => t.status === 'pending') : [];
+
+    if (pendingTasks.length === 0) {
+      list.innerHTML = `<div class="empty-state" style="padding:16px 0"><div style="font-size:13px;color:var(--text-tertiary)">All caught up on this day 🎉</div></div>`;
+      const container = document.getElementById('pending-alert');
+      if (container) container.style.display = 'none';
+      return;
+    }
+
+    list.innerHTML = pendingTasks.map(t => `
+      <li class="task-item" data-pending-task-id="${t.id}">
+        <div class="task-info">
+          <div class="task-name">${t.name}</div>
+          <div class="task-meta">
+            <span class="task-category ${t.category}">${t.category}</span>
+            <span>⏱ ${t.duration}m</span>
+          </div>
+        </div>
+        <div class="task-action">
+          <button class="btn btn-success btn-sm" data-pending-complete="${t.id}">✅ Complete</button>
+          <button class="btn btn-ghost btn-sm" data-pending-dismiss="${t.id}">⏭ Dismiss</button>
+        </div>
+      </li>
+    `).join('');
+
+    pendingTasks.forEach(t => {
+      const completeBtn = document.querySelector(`[data-pending-complete="${t.id}"]`);
+      if (completeBtn) {
+        completeBtn.addEventListener('click', () => {
+          PrepData.updateTaskStatus(t.id, 'done', null, dateStr);
+          App.showToast('✅ Task Done', t.name, 'success', 2000);
+          renderPendingModalList(dateStr);
+          renderPendingAlert();
+          renderCalendar();
+        });
+      }
+      const dismissBtn = document.querySelector(`[data-pending-dismiss="${t.id}"]`);
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+          PrepData.updateTaskStatus(t.id, 'skipped', null, dateStr);
+          renderPendingModalList(dateStr);
+          renderPendingAlert();
+          renderCalendar();
+        });
+      }
+    });
+  }
+
+  function closePendingModal() {
+    const modal = document.getElementById('pending-tasks-modal');
+    if (modal) modal.classList.remove('active');
   }
 
   // ─── Study Calendar ───
@@ -172,44 +258,105 @@ const Dashboard = (() => {
     `;
   }
 
-  // ─── Today's Plan ───
+  // ─── Today's Plan (± 1 day browsing: yesterday / today / tomorrow preview) ───
+  let planDayOffset = 0;
+
+  function getDateForOffset(offset) {
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    return d.toISOString().split('T')[0];
+  }
+
+  function renderPreviewTaskItem(task) {
+    return `
+      <li class="task-item" style="opacity:0.65">
+        <div class="task-checkbox" style="visibility:hidden"></div>
+        <div class="task-info">
+          <div class="task-name">${task.name}</div>
+          <div class="task-meta"><span class="task-category ${task.category}">${task.category}</span></div>
+        </div>
+        <div class="task-duration">⏱ ${task.duration}m</div>
+      </li>
+    `;
+  }
+
   function renderTodaysPlan() {
     const container = document.getElementById('today-plan');
     if (!container) return;
 
-    const todayLog = PrepData.getOrCreateTodayLog();
+    const viewedDate = getDateForOffset(planDayOffset);
+    const isToday = planDayOffset === 0;
+    const isFuture = planDayOffset > 0;
 
-    const doneTasks = todayLog.tasks.filter(t => t.status === 'done');
-    const totalTasks = todayLog.tasks.length;
+    let log = null;
+    let tasks = [];
+    let isPreview = false;
+    let isMissingLog = false;
+
+    if (isToday) {
+      log = PrepData.getOrCreateTodayLog();
+      tasks = log.tasks;
+    } else if (isFuture) {
+      const settings = PrepData.getSettings();
+      const primaryExam = settings.targetExams[0] || 'CAT';
+      tasks = PrepData.buildDailyTasks(primaryExam, viewedDate);
+      isPreview = true;
+    } else {
+      log = PrepData.getDailyLog(viewedDate);
+      if (log) tasks = log.tasks;
+      else isMissingLog = true;
+    }
+
+    const doneTasks = tasks.filter(t => t.status === 'done');
+    const totalTasks = tasks.length;
     const progressPercent = totalTasks > 0 ? Math.round((doneTasks.length / totalTasks) * 100) : 0;
-    const totalPlanned = todayLog.totalPlanned;
-    const totalActual = todayLog.totalActual || 0;
+    const totalPlanned = tasks.reduce((s, t) => s + t.duration, 0);
+    const totalActual = log ? (log.totalActual || 0) : 0;
 
-    container.innerHTML = `
-      <div class="card-header">
-        <div>
-          <div class="card-title">📋 Today's Plan — ${App.formatDuration(totalPlanned)}</div>
-          <div class="card-subtitle">${doneTasks.length}/${totalTasks} tasks completed • ${App.formatDuration(totalActual)} studied</div>
-        </div>
-        <div class="card-actions">
-          <button class="btn btn-sm btn-primary" onclick="App.navigateTo('enter-score')">+ Enter Score</button>
-        </div>
-      </div>
-      <div class="card-body-compact">
+    const niceDate = new Date(viewedDate + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+    const dayLabel = isToday ? "Today's Plan" : isPreview ? `${niceDate} — Preview` : niceDate;
+
+    let bodyHtml;
+    if (isMissingLog) {
+      bodyHtml = `<div class="empty-state" style="padding:24px 0"><div style="font-size:32px;margin-bottom:8px">📭</div><div style="font-size:13px;color:var(--text-tertiary)">No plan was recorded for this day</div></div>`;
+    } else {
+      bodyHtml = `
         <div class="today-progress">
           <div class="today-progress-bar" style="width: ${progressPercent}%"></div>
         </div>
         <ul class="task-list" id="task-list">
-          ${todayLog.tasks.map(task => renderTaskItem(task)).join('')}
+          ${tasks.map(task => isPreview ? renderPreviewTaskItem(task) : renderTaskItem(task)).join('')}
         </ul>
+      `;
+    }
+
+    container.innerHTML = `
+      <div class="card-header">
+        <div>
+          <div class="card-title">📋 ${dayLabel} — ${App.formatDuration(totalPlanned)}</div>
+          <div class="card-subtitle">${isPreview ? 'Not active yet — come back tomorrow' : isMissingLog ? '' : `${doneTasks.length}/${totalTasks} tasks completed • ${App.formatDuration(totalActual)} studied`}</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-icon btn-ghost btn-sm" id="plan-prev" title="Previous day">‹</button>
+          <button class="btn btn-icon btn-ghost btn-sm" id="plan-next" title="Next day" ${planDayOffset >= 1 ? 'disabled style="opacity:0.3;cursor:default"' : ''}>›</button>
+          ${isToday ? `<button class="btn btn-sm btn-primary" onclick="App.navigateTo('enter-score')">+ Enter Score</button>` : ''}
+        </div>
       </div>
+      <div class="card-body-compact">${bodyHtml}</div>
     `;
 
+    const prevBtn = document.getElementById('plan-prev');
+    const nextBtn = document.getElementById('plan-next');
+    if (prevBtn) prevBtn.addEventListener('click', () => { planDayOffset = Math.max(-1, planDayOffset - 1); renderTodaysPlan(); });
+    if (nextBtn) nextBtn.addEventListener('click', () => { planDayOffset = Math.min(1, planDayOffset + 1); renderTodaysPlan(); });
+
+    if (isPreview || isMissingLog) return;
+
     // Attach event handlers
-    todayLog.tasks.forEach(task => {
+    tasks.forEach(task => {
       const checkbox = document.querySelector(`[data-task-id="${task.id}"] .task-checkbox`);
       if (checkbox) {
-        checkbox.addEventListener('click', (e) => handleTaskToggle(task.id, e));
+        checkbox.addEventListener('click', (e) => handleTaskToggle(task.id, e, viewedDate));
       }
 
       const startBtn = document.querySelector(`[data-start-test="${task.id}"]`);
@@ -298,12 +445,13 @@ const Dashboard = (() => {
     `;
   }
 
-  function handleTaskToggle(taskId, e) {
+  function handleTaskToggle(taskId, e, dateStr) {
     e.stopPropagation();
-    const todayLog = PrepData.getTodayLog();
-    if (!todayLog) return;
+    dateStr = dateStr || new Date().toISOString().split('T')[0];
+    const dayLog = PrepData.getDailyLog(dateStr);
+    if (!dayLog) return;
 
-    const task = todayLog.tasks.find(t => t.id === taskId);
+    const task = dayLog.tasks.find(t => t.id === taskId);
     if (!task) return;
 
     // Cycle: pending → done → skipped → pending
@@ -316,7 +464,7 @@ const Dashboard = (() => {
     const timeInput = document.querySelector(`[data-task-time="${taskId}"]`);
     const actualTime = timeInput ? parseInt(timeInput.value) || null : null;
 
-    const updatedLog = PrepData.updateTaskStatus(taskId, newStatus, actualTime);
+    const updatedLog = PrepData.updateTaskStatus(taskId, newStatus, actualTime, dateStr);
 
     // Show toast for completed tasks
     if (newStatus === 'done') {
@@ -326,16 +474,18 @@ const Dashboard = (() => {
     // Celebrate finishing the whole day's plan — once per day
     if (updatedLog && !updatedLog.celebratedComplete && updatedLog.tasks.every(t => t.status !== 'pending')) {
       updatedLog.celebratedComplete = true;
-      PrepData.saveTodayLog(updatedLog);
+      PrepData.saveDailyLog(dateStr, updatedLog);
       Celebration.confetti(90);
       setTimeout(() => {
-        App.showToast('🎉 Day Complete!', "You've finished today's entire plan — great work.", 'success', 6000);
+        App.showToast('🎉 Day Complete!', "You've finished that day's entire plan — great work.", 'success', 6000);
       }, 200);
     }
 
     // Re-render
     renderTodaysPlan();
     renderStatCards();
+    renderPendingAlert();
+    renderCalendar();
   }
 
   // ─── Revision Queue (spaced repetition: 1/3/7/14/30 days after each mock) ───
@@ -434,6 +584,7 @@ const Dashboard = (() => {
               <div class="weakness-info">
                 <div class="weakness-name">${w.topic}</div>
                 <div class="weakness-detail">${w.section} • ${w.occurrences} occurrence(s)</div>
+                <div class="mini-bar"><div class="mini-bar-fill ${color}" style="width:${Math.round(w.avgAccuracy)}%"></div></div>
               </div>
               <div class="weakness-value ${color}">${Math.round(w.avgAccuracy)}%</div>
             </div>
@@ -473,16 +624,20 @@ const Dashboard = (() => {
         <span class="stat-card-link" onclick="App.navigateTo('analytics')">View All →</span>
       </div>
       <div class="card-body">
-        ${recent.reverse().map(m => `
+        ${recent.reverse().map(m => {
+          const color = m.accuracy >= 75 ? 'good' : m.accuracy >= 60 ? 'ok' : 'bad';
+          return `
           <div class="weakness-item">
             <div class="weakness-indicator ${m.accuracy >= 75 ? 'good' : m.accuracy >= 60 ? 'moderate' : 'critical'}"></div>
             <div class="weakness-info">
               <div class="weakness-name">${m.exam} — ${m.section}</div>
               <div class="weakness-detail">${m.testType} • ${new Date(m.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</div>
+              <div class="mini-bar"><div class="mini-bar-fill ${color}" style="width:${Math.min(100, Math.round(m.accuracy))}%"></div></div>
             </div>
-            <div class="weakness-value ${m.accuracy >= 75 ? 'good' : m.accuracy >= 60 ? 'ok' : 'bad'}">${m.accuracy}%</div>
+            <div class="weakness-value ${color}">${m.accuracy}%</div>
           </div>
-        `).join('')}
+        `;
+        }).join('')}
       </div>
     `;
   }
@@ -537,5 +692,5 @@ const Dashboard = (() => {
     `;
   }
 
-  return { init, refresh };
+  return { init, refresh, closePendingModal };
 })();

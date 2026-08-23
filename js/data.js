@@ -613,6 +613,11 @@ const PrepData = (() => {
     'Networks': [{ slug: 'DILR-Networks', label: 'Routes & Networks (13 Qs)' }]
   };
 
+  // Sum of the base durations below (50+40+45+20+35+20) — the reference point
+  // "Daily Study Hours" scales against. Never touches the PYQ full-mock override,
+  // since a real exam's timing shouldn't stretch to fit a study-hours preference.
+  const BASELINE_STUDY_MINUTES = 210;
+
   function buildCatDailyTasks(dateStr) {
     const topics = EXAM_CONFIG.CAT.topics;
     const dayIdx = getCurriculumDayIndex(dateStr);
@@ -625,29 +630,34 @@ const PrepData = (() => {
     const dilrSets = DILR_PRACTICE_SETS[dilrTopic];
     const dilrSet = dilrSets ? dilrSets[Math.floor(dayIdx / topics.DILR.length) % dilrSets.length] : null;
 
+    const settings = getSettings();
+    const targetMinutes = (settings.dailyStudyHours || 4) * 60;
+    const scale = targetMinutes / BASELINE_STUDY_MINUTES;
+    const scaled = (mins) => Math.max(10, Math.round((mins * scale) / 5) * 5);
+
     const tasks = [
       {
-        name: `Quant — ${qaTopic}`, section: 'QA', topic: qaTopic, type: 'learn', duration: 50, category: 'quant',
+        name: `Quant — ${qaTopic}`, section: 'QA', topic: qaTopic, type: 'learn', duration: scaled(50), category: 'quant',
         cheatSheetUrl: qaSheet ? `./data/cheatsheets/${qaSheet.file}` : null,
         cheatSheetName: qaSheet ? qaSheet.label : null
       },
       {
-        name: `VARC — ${varcTopic}`, section: 'VARC', topic: varcTopic, type: 'practice', duration: 40, category: 'varc',
+        name: `VARC — ${varcTopic}`, section: 'VARC', topic: varcTopic, type: 'practice', duration: scaled(40), category: 'varc',
         cheatSheetUrl: `./data/cheatsheets/${VARC_CHEAT_SHEET.file}`,
         cheatSheetName: VARC_CHEAT_SHEET.label
       },
       dilrSet
         ? {
-            name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr',
+            name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: scaled(45), category: 'dilr',
             resourceLink: `./data/lrdi/${dilrSet.slug}-Questions.pdf`,
             resourceName: dilrSet.label,
             solutionsUrl: `./data/lrdi/${dilrSet.slug}-Solutions.pdf`,
             isPdf: true
           }
-        : { name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: 45, category: 'dilr' },
-      { name: 'Current Affairs', section: 'GK', type: 'read', duration: 20, category: 'gk' },
-      { name: 'Mock / Sectional', section: null, type: 'test', duration: 35, category: 'mock' },
-      { name: 'Revision', section: null, type: 'review', duration: 20, category: 'review' }
+        : { name: `DILR — ${dilrTopic}`, section: 'DILR', topic: dilrTopic, type: 'practice', duration: scaled(45), category: 'dilr' },
+      { name: 'Current Affairs', section: 'GK', type: 'read', duration: scaled(20), category: 'gk' },
+      { name: 'Mock / Sectional', section: null, type: 'test', duration: scaled(35), category: 'mock' },
+      { name: 'Revision', section: null, type: 'review', duration: scaled(20), category: 'review' }
     ];
 
     if (dayIdx % PYQ_CYCLE_DAYS === PYQ_CYCLE_DAYS - 1) {
@@ -725,10 +735,10 @@ const PrepData = (() => {
     saveData(data);
   }
 
-  function updateTaskStatus(taskId, status, actualTime = null) {
-    const today = new Date().toISOString().split('T')[0];
+  function updateTaskStatus(taskId, status, actualTime = null, dateStr = null) {
+    if (!dateStr) dateStr = new Date().toISOString().split('T')[0];
     const data = getData();
-    const log = data.dailyLogs[today];
+    const log = data.dailyLogs[dateStr];
     if (!log) return;
 
     const task = log.tasks.find(t => t.id === taskId);

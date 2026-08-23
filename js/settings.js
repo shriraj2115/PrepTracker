@@ -168,6 +168,7 @@ const Settings = (() => {
     });
 
     PrepData.saveSettings(settings);
+    App.updateSidebarProfile();
     App.showToast('✅ Settings Saved', 'Your preferences have been updated', 'success');
   }
 
@@ -180,6 +181,7 @@ const Settings = (() => {
       settings.targetExams.push(examKey);
     }
     PrepData.saveSettings(settings);
+    App.updateSidebarProfile();
 
     const toggle = document.getElementById(`exam-toggle-${examKey}`);
     if (toggle) toggle.classList.toggle('active');

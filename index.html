@@ -511,6 +511,25 @@
   </div>
 </div>
 
+<!-- ═══ PENDING TASKS (FROM YESTERDAY) MODAL ═══ -->
+<div class="modal-overlay" id="pending-tasks-modal" onclick="Dashboard.closePendingModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">⚠️ Left Over From Yesterday</div>
+        <div class="card-subtitle" id="pending-modal-subtitle" style="margin-top:4px"></div>
+      </div>
+      <button class="modal-close" onclick="Dashboard.closePendingModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <ul class="task-list" id="pending-modal-list"></ul>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="Dashboard.closePendingModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ ACHIEVEMENTS MODAL ═══ -->
 <div class="modal-overlay" id="achievements-modal" onclick="Achievements.close()">
   <div class="modal" onclick="event.stopPropagation()">

@@ -18,6 +18,7 @@ const App = (() => {
     setupTimer();
     setupMobileMenu();
     initMorningBriefing();
+    updateSidebarProfile();
 
     // Initialize all modules
     Dashboard.init();
@@ -46,6 +47,30 @@ const App = (() => {
     // Check for pending reminders
     checkReminders();
     setInterval(checkReminders, 60000); // every minute
+  }
+
+  // ─── Sidebar Profile (was hardcoded HTML, never reflected Settings) ───
+  function updateSidebarProfile() {
+    const settings = PrepData.getSettings();
+    const name = settings.userName || 'Student';
+    const primaryExam = settings.targetExams[0] || null;
+
+    const nameEl = document.querySelector('.sidebar-user-name');
+    if (nameEl) nameEl.textContent = name;
+
+    const avatarEl = document.querySelector('.sidebar-user-avatar');
+    if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase() || 'S';
+
+    const roleEl = document.querySelector('.sidebar-user-role');
+    if (roleEl) {
+      if (primaryExam) {
+        const examDate = settings.examDates[primaryExam];
+        const year = examDate ? new Date(examDate).getFullYear() : '';
+        roleEl.textContent = `${primaryExam}${year ? ' ' + year : ''} Aspirant`;
+      } else {
+        roleEl.textContent = 'Exam Aspirant';
+      }
+    }
   }
 
   // ─── Navigation ───
@@ -455,6 +480,7 @@ const App = (() => {
     openQuickTimerModal,
     closeQuickTimerModal,
     quickStartTimer,
+    updateSidebarProfile,
     getTimerState,
     getTaskIcon,
     formatDuration,
