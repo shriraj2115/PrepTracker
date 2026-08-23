@@ -5,10 +5,15 @@
    ═══════════════════════════════════════════════════════════════ */
 
 const Achievements = (() => {
+  let previousEarned = null;
+
   function init() {
     const btn = document.getElementById('sidebar-achievements-btn');
     if (btn) btn.addEventListener('click', open);
-    refreshCount();
+    // Seed with whatever's already earned so the first refresh doesn't
+    // "celebrate" badges the user already had before this page load.
+    previousEarned = getEarnedIds(PrepData.getData());
+    updateCountDisplay(previousEarned);
   }
 
   // Computed live against current data, independent of the stored
@@ -17,12 +22,29 @@ const Achievements = (() => {
     return new Set(PrepData.ACHIEVEMENTS.filter(a => a.check(data)).map(a => a.id));
   }
 
-  function refreshCount() {
+  function updateCountDisplay(earned) {
     const el = document.getElementById('achievements-count');
-    if (!el) return;
+    if (el) el.textContent = `${earned.size}/${PrepData.ACHIEVEMENTS.length}`;
+  }
+
+  function refreshCount() {
     const data = PrepData.getData();
     const earned = getEarnedIds(data);
-    el.textContent = `${earned.size}/${PrepData.ACHIEVEMENTS.length}`;
+
+    if (previousEarned) {
+      const newlyEarned = [...earned].filter(id => !previousEarned.has(id));
+      newlyEarned.forEach(celebrateUnlock);
+    }
+
+    previousEarned = earned;
+    updateCountDisplay(earned);
+  }
+
+  function celebrateUnlock(id) {
+    const achievement = PrepData.ACHIEVEMENTS.find(a => a.id === id);
+    if (!achievement) return;
+    Celebration.confetti();
+    App.showToast('🎉 Achievement Unlocked!', `${achievement.icon} ${achievement.name} — ${achievement.desc}`, 'success', 6000);
   }
 
   function open() {

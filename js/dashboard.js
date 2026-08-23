@@ -316,11 +316,21 @@ const Dashboard = (() => {
     const timeInput = document.querySelector(`[data-task-time="${taskId}"]`);
     const actualTime = timeInput ? parseInt(timeInput.value) || null : null;
 
-    PrepData.updateTaskStatus(taskId, newStatus, actualTime);
+    const updatedLog = PrepData.updateTaskStatus(taskId, newStatus, actualTime);
 
     // Show toast for completed tasks
     if (newStatus === 'done') {
       App.showToast('✅ Task Done', task.name, 'success', 2000);
+    }
+
+    // Celebrate finishing the whole day's plan — once per day
+    if (updatedLog && !updatedLog.celebratedComplete && updatedLog.tasks.every(t => t.status !== 'pending')) {
+      updatedLog.celebratedComplete = true;
+      PrepData.saveTodayLog(updatedLog);
+      Celebration.confetti(90);
+      setTimeout(() => {
+        App.showToast('🎉 Day Complete!', "You've finished today's entire plan — great work.", 'success', 6000);
+      }, 200);
     }
 
     // Re-render

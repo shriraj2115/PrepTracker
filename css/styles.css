@@ -1370,6 +1370,38 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   CELEBRATION (confetti)
+   ═══════════════════════════════════════════════════════════════ */
+
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  opacity: 0.9;
+  border-radius: 2px;
+  animation-name: confetti-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(var(--rot, 360deg)); opacity: 0.3; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
    ACHIEVEMENTS
    ═══════════════════════════════════════════════════════════════ */
 
