@@ -1460,6 +1460,15 @@ input, select, textarea {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  transition: width var(--transition-fast), height var(--transition-fast), max-width var(--transition-fast), max-height var(--transition-fast), border-radius var(--transition-fast);
+}
+
+.pdf-reader-modal.fullscreen {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  border-radius: 0;
 }
 
 .pdf-reader-body {

@@ -14,6 +14,9 @@ const PdfReader = (() => {
     frame.src = url;
     if (titleEl) titleEl.textContent = `📄 ${title || 'Document'}`;
     modal.classList.add('active');
+    modal.querySelector('.pdf-reader-modal')?.classList.remove('fullscreen');
+    const fsBtn = document.getElementById('pdf-reader-fullscreen-btn');
+    if (fsBtn) { fsBtn.textContent = '⛶'; fsBtn.title = 'Fullscreen'; }
   }
 
   function close() {
@@ -23,5 +26,16 @@ const PdfReader = (() => {
     if (frame) frame.src = ''; // stop rendering once closed
   }
 
-  return { open, close };
+  function toggleFullscreen() {
+    const dialog = document.querySelector('#pdf-reader-modal .pdf-reader-modal');
+    const fsBtn = document.getElementById('pdf-reader-fullscreen-btn');
+    if (!dialog) return;
+    const isFullscreen = dialog.classList.toggle('fullscreen');
+    if (fsBtn) {
+      fsBtn.textContent = isFullscreen ? '⤢' : '⛶';
+      fsBtn.title = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
+    }
+  }
+
+  return { open, close, toggleFullscreen };
 })();
