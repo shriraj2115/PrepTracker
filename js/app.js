@@ -134,10 +134,31 @@ const App = (() => {
     const timerEl = document.getElementById('topbar-timer');
     if (timerEl) {
       timerEl.addEventListener('click', () => {
-        navigateTo('timer');
+        if (timerRunning) {
+          navigateTo('timer');
+        } else {
+          openQuickTimerModal();
+        }
       });
     }
     updateTimerDisplay();
+  }
+
+  function openQuickTimerModal() {
+    const modal = document.getElementById('quick-timer-modal');
+    if (modal) modal.classList.add('active');
+  }
+
+  function closeQuickTimerModal() {
+    const modal = document.getElementById('quick-timer-modal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  function quickStartTimer(mode) {
+    closeQuickTimerModal();
+    StudyTimer.setMode(mode);
+    StudyTimer.start();
+    showToast('⏱ Timer Started', mode === 'pomodoro' ? 'Pomodoro session running' : 'Stopwatch running', 'success', 2000);
   }
 
   function startGlobalTimer(taskName = 'Study Session') {
@@ -431,6 +452,9 @@ const App = (() => {
     startGlobalTimer,
     pauseGlobalTimer,
     resetGlobalTimer,
+    openQuickTimerModal,
+    closeQuickTimerModal,
+    quickStartTimer,
     getTimerState,
     getTaskIcon,
     formatDuration,

@@ -524,6 +524,21 @@
   </div>
 </div>
 
+<!-- ═══ QUICK-START TIMER MODAL ═══ -->
+<div class="modal-overlay" id="quick-timer-modal" onclick="App.closeQuickTimerModal()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title">⏱ Start Studying</div>
+      <button class="modal-close" onclick="App.closeQuickTimerModal()">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-primary btn-lg" onclick="App.quickStartTimer('stopwatch')" style="width:100%">▶️ Stopwatch</button>
+      <button class="btn btn-secondary btn-lg" onclick="App.quickStartTimer('pomodoro')" style="width:100%">🍅 Pomodoro</button>
+      <div class="form-hint" style="text-align:center; margin-top:4px">Starts right away — open the Timer page anytime to pause or switch modes</div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ TEST SESSION FLOATING TIMER ═══ -->
 <div class="test-session-bar" id="test-session-bar" style="display:none">
   <div class="test-session-info">
